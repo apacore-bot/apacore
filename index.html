@@ -1,0 +1,2179 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<!-- ═══════════════════════════════════════════════
+     CONTENT SECURITY POLICY — Pen Test Fix #3
+     Bloquea scripts externos no autorizados,
+     clickjacking, y conexiones a dominios no declarados
+     ═══════════════════════════════════════════════ -->
+<meta http-equiv="Content-Security-Policy" content="
+  default-src 'self';
+  script-src 'self' 'unsafe-inline';
+  style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+  font-src https://fonts.gstatic.com data:;
+  img-src 'self' data: https:;
+  connect-src 'self';
+  frame-ancestors 'none';
+  base-uri 'self';
+  form-action 'self' https://wa.me;
+">
+<meta charset="UTF-8">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="X-Content-Type-Options" content="nosniff">
+<meta http-equiv="X-Frame-Options" content="DENY">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>APA Core — Análisis Probabilístico Deportivo y Financiero</title>
+<meta name="description" content="Señales deportivas y financieras con track record auditado. 78.9% de acierto en 109 pronósticos verificados. Directo a tu WhatsApp.">
+<meta name="robots" content="index, follow">
+<meta property="og:title" content="APA Core — Track record auditado. 78.9% WR.">
+<meta property="og:description" content="109 pronósticos verificados. Wins y losses publicados. Señales directo a tu WhatsApp.">
+<meta property="og:type" content="website">
+<!-- ═══════════════════════════════════════════════
+     FUENTES — Pen Test Fix #4
+     TODO DEPLOY: Reemplazar por fuentes self-hosted
+     Comando: node descargar-fuentes.js
+     Genera /fonts/*.woff2 + CSS local sin dependencia Google
+     Hasta entonces: Google Fonts con crossorigin seguro
+     ═══════════════════════════════════════════════ -->
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=IBM+Plex+Mono:wght@300;400;500;600&family=Manrope:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════════════
+   TOKENS
+════════════════════════════════════════════════ */
+:root{
+  --bg:#07090d;--bg2:#0c1018;--bg3:#10161e;
+  --border:rgba(255,255,255,.055);--border2:rgba(255,255,255,.11);
+  --text:#dde4ec;--muted:#5a6b7a;--muted2:#2e3f4f;
+  --gold:#c8a44a;--gold2:#e6c660;--gold3:#f5d97a;
+  --golddim:rgba(200,164,74,.10);--goldglow:rgba(200,164,74,.25);--goldborder:rgba(200,164,74,.22);
+  --sp:#12c987;--sp2:#3de0a8;--sp3:#6eefc0;
+  --spdim:rgba(18,201,135,.09);--spglow:rgba(18,201,135,.22);--spborder:rgba(18,201,135,.22);
+  --nba:#f97316;--nba2:#fb923c;
+  --nbadim:rgba(249,115,22,.09);--nbaglow:rgba(249,115,22,.22);--nbaborder:rgba(249,115,22,.22);
+  --win:#43d97a;--loss:#e04f4f;--warn:#f59e0b;
+  --windim:rgba(67,217,122,.09);--lossdim:rgba(224,79,79,.09);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:'Manrope',sans-serif;font-size:14px;line-height:1.6;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.022'/%3E%3C/svg%3E");opacity:.4;}
+
+/* ── KEYFRAMES ── */
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.75)}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.25}}
+@keyframes fadeup{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadein{from{opacity:0}to{opacity:1}}
+@keyframes grow{from{width:0!important}to{}}
+@keyframes slideright{from{opacity:0;transform:translateX(-12px)}to{opacity:1;transform:translateX(0)}}
+@keyframes floatin{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes ticker{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes countup{from{opacity:0}to{opacity:1}}
+@keyframes glowpulse{0%,100%{box-shadow:0 0 20px rgba(18,201,135,.15)}50%{box-shadow:0 0 40px rgba(18,201,135,.3)}}
+
+/* ── PAGES ── */
+.page{display:none;}
+.page.active{display:block;}
+
+/* ════════════════════════════════════════════════
+   NAV
+════════════════════════════════════════════════ */
+nav{position:fixed;top:0;left:0;right:0;z-index:400;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 36px;background:rgba(7,9,13,.95);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border-bottom:1px solid var(--border);}
+.nav-logo{display:flex;align-items:center;gap:8px;cursor:pointer;font-family:'Syne',sans-serif;font-weight:800;font-size:17px;letter-spacing:-.3px;color:var(--text);}
+.ndot{width:7px;height:7px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold);animation:pulse 2.2s ease-in-out infinite;flex-shrink:0;}
+.ldot{width:5px;height:5px;border-radius:50%;background:var(--win);box-shadow:0 0 7px var(--win);animation:blink 1.5s ease-in-out infinite;flex-shrink:0;}
+.nav-links{display:flex;align-items:center;gap:20px;}
+.nav-link{font-size:12px;font-weight:600;color:var(--muted);cursor:pointer;transition:color .2s;letter-spacing:.01em;border:none;background:none;font-family:'Manrope',sans-serif;}
+.nav-link:hover{color:var(--text);}
+.nav-score{display:flex;align-items:center;gap:6px;background:var(--spdim);border:1px solid var(--spborder);border-radius:100px;padding:3px 10px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.06em;color:var(--sp2);cursor:pointer;}
+.nav-cta{background:var(--gold);color:#000;padding:7px 18px;border-radius:5px;font-size:12px;font-weight:800;letter-spacing:.04em;cursor:pointer;border:none;font-family:'Manrope',sans-serif;transition:all .2s;white-space:nowrap;}
+.nav-cta:hover{background:var(--gold2);box-shadow:0 0 20px var(--goldglow);}
+@media(max-width:700px){
+  nav{padding:0 16px;}
+  .nav-score,.nav-link.hide-mob{display:none;}
+}
+
+/* ════════════════════════════════════════════════
+   SHARED COMPONENTS
+════════════════════════════════════════════════ */
+.chip{padding:2px 7px;border-radius:3px;font-family:'IBM Plex Mono',monospace;font-size:8px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;}
+.chip.win{background:var(--windim);color:var(--win);border:1px solid rgba(67,217,122,.22);}
+.chip.loss{background:var(--lossdim);color:var(--loss);border:1px solid rgba(224,79,79,.22);}
+.chip.live{background:var(--spdim);color:var(--sp);border:1px solid var(--spborder);animation:blink 1.5s ease-in-out infinite;}
+
+/* ════════════════════════════════════════════════
+   TICKER
+════════════════════════════════════════════════ */
+.lp-ticker-wrap{position:relative;z-index:2;overflow:hidden;border-bottom:1px solid var(--border);background:rgba(7,9,13,.8);}
+.lp-ticker{display:flex;white-space:nowrap;}
+.lp-ticker-inner{display:inline-flex;align-items:center;gap:16px;padding:7px 0;animation:ticker 40s linear infinite;}
+.tk-item{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.03em;white-space:nowrap;}
+.tk-item.win strong{color:var(--win);}
+.tk-item.loss strong{color:var(--loss);}
+.tk-sep{color:var(--border2);font-size:16px;}
+
+/* ════════════════════════════════════════════════
+   HOME HERO
+════════════════════════════════════════════════ */
+.lp-hero{position:relative;min-height:100vh;display:flex;flex-direction:column;padding-top:56px;overflow:hidden;}
+.lp-hero-bg{position:absolute;inset:0;z-index:0;}
+.lp-hero-glow{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;}
+.lp-hero-glow-1{width:600px;height:600px;top:-120px;left:-120px;background:radial-gradient(circle,rgba(18,201,135,.055) 0%,transparent 70%);}
+.lp-hero-glow-2{width:500px;height:500px;bottom:-60px;right:-100px;background:radial-gradient(circle,rgba(200,164,74,.045) 0%,transparent 70%);}
+.lp-grid-overlay{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.016) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.016) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse 80% 80% at 50% 40%,black,transparent);}
+.lp-hero-content{position:relative;z-index:1;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:56px 24px 24px;max-width:900px;margin:0 auto;width:100%;}
+.lp-eyebrow{display:inline-flex;align-items:center;gap:7px;padding:4px 14px;background:var(--golddim);border:1px solid var(--goldborder);border-radius:100px;font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.09em;color:var(--gold2);text-transform:uppercase;margin-bottom:24px;animation:fadeup .5s ease both;}
+.lp-h1{font-family:'Syne',sans-serif;line-height:1;margin-bottom:14px;animation:fadeup .5s .06s ease both;}
+.lp-h1-pre{display:block;font-size:clamp(16px,2.2vw,22px);font-weight:600;color:var(--muted);letter-spacing:-.3px;margin-bottom:4px;}
+.lp-h1-big{display:block;font-size:clamp(80px,20vw,196px);font-weight:800;letter-spacing:clamp(-5px,-1.2vw,-10px);line-height:.88;color:var(--sp2);text-shadow:0 0 100px rgba(18,201,135,.22);}
+.lp-pct{font-size:clamp(40px,10vw,98px);color:var(--sp2);letter-spacing:clamp(-3px,-0.6vw,-5px);}
+.lp-h1-post{display:block;font-size:clamp(18px,2.8vw,30px);font-weight:700;letter-spacing:-.8px;color:var(--text);margin-top:10px;}
+.lp-sub{font-size:15px;color:var(--muted);max-width:500px;line-height:1.75;margin:0 auto 28px;animation:fadeup .5s .12s ease both;}
+.lp-hero-actions{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;animation:fadeup .5s .18s ease both;}
+.lp-cta-primary{background:var(--sp);color:#000;padding:13px 28px;border-radius:7px;font-size:14px;font-weight:800;cursor:pointer;border:none;font-family:'Manrope',sans-serif;transition:all .22s;display:inline-flex;align-items:center;gap:8px;letter-spacing:.01em;}
+.lp-cta-primary:hover{background:var(--sp2);box-shadow:0 0 28px var(--spglow);transform:translateY(-2px);}
+.lp-cta-secondary{background:transparent;color:var(--text);padding:13px 22px;border-radius:7px;font-size:14px;font-weight:700;cursor:pointer;border:1px solid var(--border2);font-family:'Manrope',sans-serif;transition:all .22s;}
+.lp-cta-secondary:hover{border-color:rgba(255,255,255,.3);background:rgba(255,255,255,.04);}
+.lp-microcopy{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted2);margin-top:12px;letter-spacing:.04em;animation:fadeup .5s .22s ease both;}
+
+/* proof strip */
+.lp-hero-strip{position:relative;z-index:1;border-top:1px solid var(--border);background:rgba(7,9,13,.75);backdrop-filter:blur(12px);}
+.lp-strip-inner{max-width:1060px;margin:0 auto;padding:14px 24px;display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;}
+.lp-strip-item{text-align:center;padding:8px 24px;flex:1;min-width:120px;}
+.lp-strip-num{font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;line-height:1;margin-bottom:4px;}
+.lp-strip-num.sp{color:var(--sp2);}
+.lp-strip-num.mk{color:var(--gold2);}
+.lp-strip-lbl{font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;}
+.lp-strip-div{width:1px;height:30px;background:var(--border);}
+@media(max-width:600px){.lp-strip-div{display:none;}.lp-strip-item{min-width:80px;padding:6px 10px;}}
+
+/* ════════════════════════════════════════════════
+   SECTIONS
+════════════════════════════════════════════════ */
+.lp-section{position:relative;z-index:1;padding:72px 0;}
+.lp-section-alt{background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);}
+.lp-container{max-width:1060px;margin:0 auto;padding:0 24px;}
+.lp-section-tag{display:inline-flex;align-items:center;gap:7px;font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--sp2);margin-bottom:14px;}
+.lp-h2{font-family:'Syne',sans-serif;font-size:clamp(26px,4vw,46px);font-weight:800;letter-spacing:-1.5px;line-height:1.05;margin-bottom:12px;}
+.lp-h2-hl{background:linear-gradient(135deg,var(--sp),var(--sp2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.lp-h2-hl.mk{background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.lp-h2-sub{font-size:14px;color:var(--muted);max-width:480px;line-height:1.7;margin-bottom:32px;}
+
+/* ── PROOF GRID ── */
+.lp-proof-grid{display:grid;grid-template-columns:1fr 1fr 1.4fr;gap:14px;margin-bottom:28px;}
+@media(max-width:860px){.lp-proof-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:500px){.lp-proof-grid{grid-template-columns:1fr;}}
+.lp-proof-card{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:22px 20px;display:flex;flex-direction:column;gap:8px;transition:transform .2s;}
+.lp-proof-card:hover{transform:translateY(-2px);}
+.lp-pc-label{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);}
+.lp-pc-num{font-family:'IBM Plex Mono',monospace;font-size:52px;font-weight:600;line-height:1;}
+.lp-pc-sub{font-size:11px;color:var(--muted);}
+.lp-pc-bar-bg{height:4px;background:rgba(255,255,255,.06);border-radius:100px;overflow:hidden;}
+.lp-pc-bar-fill{height:100%;border-radius:100px;animation:grow 1.5s ease both;}
+.lp-pc-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:100px;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;background:rgba(67,217,122,.1);border:1px solid rgba(67,217,122,.25);color:var(--win);width:fit-content;margin-top:4px;}
+.lp-proof-cats{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:18px 20px;}
+.lp-cat-title{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted2);margin-bottom:10px;}
+.lp-cat-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.lp-cat-name{font-size:11px;font-weight:600;min-width:120px;}
+.lp-cat-bar{flex:1;height:4px;background:rgba(255,255,255,.05);border-radius:100px;overflow:hidden;}
+.lp-cat-bar div{height:100%;border-radius:100px;animation:grow 1.2s ease both;}
+.lp-cat-pct{font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;min-width:34px;text-align:right;}
+.lp-cat-divider{height:1px;background:var(--border);margin:8px 0;}
+.lp-cat-depuracion{font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--warn);letter-spacing:.06em;}
+
+/* signals preview */
+.lp-signals-preview{background:var(--bg2);border:1px solid var(--border);border-radius:12px;overflow:hidden;}
+.lp-sp-header{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--border);}
+.lp-sp-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;}
+.lp-sp-rows{padding:0 18px;}
+.lp-sp-row{display:grid;grid-template-columns:22px 1fr 1fr auto auto;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.lp-sp-row:last-child{border-bottom:none;}
+.lp-sp-prop{font-size:11px;color:var(--muted);}
+.lp-sp-prob{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);}
+.lp-sp-footer{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-top:1px solid var(--border);flex-wrap:wrap;gap:10px;}
+.lp-sp-cta{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--sp2);border:1px solid var(--spborder);padding:5px 12px;border-radius:5px;cursor:pointer;background:transparent;transition:all .2s;}
+.lp-sp-cta:hover{background:var(--spdim);}
+@media(max-width:600px){.lp-sp-row{grid-template-columns:22px 1fr auto auto;}.lp-sp-prop{display:none;}}
+
+/* ── HOW IT WORKS ── */
+.lp-how-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:28px;}
+@media(max-width:860px){.lp-how-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:500px){.lp-how-grid{grid-template-columns:1fr;}}
+.lp-how-card{background:var(--bg2);border:1px solid var(--border);border-radius:11px;padding:20px 18px;display:flex;flex-direction:column;gap:8px;}
+.lp-how-num{font-family:'IBM Plex Mono',monospace;font-size:28px;font-weight:600;color:var(--sp);opacity:.5;line-height:1;}
+.lp-how-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;letter-spacing:-.2px;}
+.lp-how-desc{font-size:12px;color:var(--muted);line-height:1.65;}
+
+/* ── DIFFERENTIATION ── */
+.lp-diff-grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;}
+@media(max-width:700px){.lp-diff-grid{grid-template-columns:1fr;}}
+.lp-diff-col h3{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.lp-diff-item{font-size:12px;color:var(--muted);padding:7px 0;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;line-height:1.5;}
+.lp-diff-item::before{content:'✓';color:var(--sp);font-size:11px;flex-shrink:0;font-weight:800;}
+.lp-diff-item.no::before{content:'✗';color:var(--loss);}
+.lp-posit{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:24px 22px;margin-top:24px;}
+.lp-posit-quote{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;letter-spacing:-.5px;margin-bottom:8px;color:var(--sp2);}
+.lp-posit-sub{font-size:13px;color:var(--muted);line-height:1.7;}
+
+/* ── FOMO ── */
+.lp-fomo{background:linear-gradient(135deg,rgba(18,201,135,.04) 0%,rgba(7,9,13,0) 60%);}
+.lp-fomo-inner{display:grid;grid-template-columns:1fr 1fr;gap:32px;align-items:center;}
+@media(max-width:760px){.lp-fomo-inner{grid-template-columns:1fr;}}
+.lp-fomo-tag{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--sp2);margin-bottom:12px;}
+.lp-fomo-h2{font-family:'Syne',sans-serif;font-size:clamp(24px,3.5vw,40px);font-weight:800;letter-spacing:-1.2px;line-height:1.1;margin-bottom:14px;}
+.lp-fomo-desc{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:20px;}
+.lp-fomo-facts{display:flex;flex-direction:column;gap:10px;}
+.lp-fomo-fact{display:flex;align-items:flex-start;gap:10px;font-size:12px;color:var(--muted);}
+.lp-ff-icon{font-size:16px;flex-shrink:0;}
+.lp-fomo-card{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:20px;position:relative;overflow:hidden;animation:glowpulse 3s ease-in-out infinite;}
+.lp-fomo-card-title{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+.lp-fomo-signal{position:relative;}
+.lp-fomo-blur-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;background:rgba(12,16,24,.85);backdrop-filter:blur(8px);border-radius:6px;}
+.lp-fomo-blur-text{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.08em;}
+
+/* ── MODULES OVERVIEW ── */
+.hc-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;}
+@media(max-width:760px){.hc-grid{grid-template-columns:1fr;}}
+.hc-card{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:22px 22px 0;display:flex;flex-direction:column;gap:14px;cursor:pointer;transition:all .25s;overflow:hidden;}
+.hc-card.sp:hover{border-color:var(--spborder);background:rgba(18,201,135,.02);transform:translateY(-2px);box-shadow:0 8px 32px rgba(18,201,135,.07);}
+.hc-card.mk:hover{border-color:var(--goldborder);background:rgba(200,164,74,.02);transform:translateY(-2px);box-shadow:0 8px 32px rgba(200,164,74,.08);}
+.hc-card-top{display:flex;align-items:center;justify-content:space-between;}
+.hc-badge{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;border-radius:100px;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;}
+.hc-badge.sp{background:var(--spdim);border:1px solid var(--spborder);color:var(--sp2);}
+.hc-badge.mk{background:var(--golddim);border:1px solid var(--goldborder);color:var(--gold2);}
+.hc-wr{font-family:'IBM Plex Mono',monospace;font-size:32px;font-weight:700;line-height:1;}
+.hc-wr.sp{color:var(--sp2);}
+.hc-wr.mk{color:var(--gold2);}
+.hc-title{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;letter-spacing:-.5px;line-height:1.1;}
+.hc-subtitle{font-size:12px;color:var(--muted);margin-top:-8px;}
+.hc-preview{background:var(--bg2);border:1px solid var(--border);border-radius:9px;padding:12px 14px;}
+.hc-preview-label{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted2);margin-bottom:8px;}
+.hc-preview-match{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px;padding-bottom:9px;border-bottom:1px solid var(--border);}
+.hc-team{font-family:'Syne',sans-serif;font-size:13px;font-weight:800;}
+.hc-score{font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:600;letter-spacing:3px;}
+.hc-score.sp{color:var(--sp2);}
+.hc-trade{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:9px;padding-bottom:9px;border-bottom:1px solid var(--border);}
+.hc-price{font-family:'IBM Plex Mono',monospace;font-size:17px;font-weight:600;}
+.hc-price.mk{color:var(--gold2);}
+.hc-signals{display:flex;flex-direction:column;gap:5px;}
+.hcs{display:flex;align-items:center;justify-content:space-between;font-size:11px;gap:8px;}
+.hcs-p{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);margin-left:auto;}
+.hc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.hcs-stat{text-align:center;padding:8px;background:var(--bg2);border:1px solid var(--border);border-radius:7px;}
+.hcs-n{font-family:'IBM Plex Mono',monospace;font-size:16px;font-weight:700;line-height:1;margin-bottom:3px;}
+.hcs-n.sp{color:var(--sp2);}
+.hcs-n.mk{color:var(--gold2);}
+.hcs-l{font-size:9px;color:var(--muted);}
+.hc-sports{display:flex;flex-wrap:wrap;gap:6px;}
+.hcs-chip{font-size:11px;font-weight:600;padding:4px 10px;border-radius:100px;border:1px solid var(--border);}
+.hcs-chip.sp{background:var(--spdim);border-color:var(--spborder);color:var(--sp2);}
+.hcs-chip.nba{background:var(--nbadim);border-color:var(--nbaborder);color:var(--nba2);}
+.hcs-chip.soon{color:var(--muted2);font-size:10px;}
+.hc-progress{padding:0 0 4px;}
+.hc-cta{display:flex;align-items:center;justify-content:space-between;padding:14px 0;font-size:12px;font-weight:700;border-top:1px solid var(--border);margin-top:auto;}
+.hc-cta.sp{color:var(--sp2);}
+.hc-cta.mk{color:var(--gold2);}
+.hc-trust{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:0;background:var(--bg3);border:1px solid var(--border);border-radius:9px;overflow:hidden;}
+.hct-item{display:flex;align-items:center;gap:7px;padding:11px 18px;font-size:11px;font-weight:600;color:var(--muted);flex:1;justify-content:center;min-width:140px;}
+.hct-div{width:1px;height:36px;background:var(--border);}
+@media(max-width:800px){.hct-div{display:none;}.hct-item{min-width:45%;border-bottom:1px solid var(--border);}}
+
+/* ── SOCIAL PROOF / NO TESTI ── */
+.lp-no-testi{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:32px 28px;text-align:center;max-width:600px;margin:0 auto;}
+.lp-nt-icon{font-size:36px;margin-bottom:12px;}
+.lp-nt-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:10px;}
+.lp-nt-text{font-size:13px;color:var(--muted);line-height:1.75;margin-bottom:20px;max-width:480px;margin-left:auto;margin-right:auto;}
+.lp-nt-cta{display:flex;flex-direction:column;align-items:center;gap:10px;}
+.lp-nt-cta span{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted2);letter-spacing:.06em;text-transform:uppercase;}
+.lp-trust-badges{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:28px;}
+.lp-badge{display:flex;align-items:center;gap:7px;background:var(--bg2);border:1px solid var(--border);border-radius:100px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--muted);}
+.lp-badge-icon{font-size:14px;}
+
+/* ── REGISTRATION / CTA BLOCK ── */
+.lp-cta-block{background:var(--bg2);border:1px solid var(--border2);border-radius:16px;padding:40px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start;}
+@media(max-width:760px){.lp-cta-block{grid-template-columns:1fr;padding:24px 20px;}}
+.lp-cta-eyebrow{font-family:'IBM Plex Mono',monospace;font-size:9px;letter-spacing:.09em;text-transform:uppercase;color:var(--sp2);display:flex;align-items:center;gap:7px;margin-bottom:14px;}
+.lp-cta-h2{font-family:'Syne',sans-serif;font-size:clamp(22px,3vw,34px);font-weight:800;letter-spacing:-1px;line-height:1.1;margin-bottom:14px;}
+.lp-cta-desc{font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:20px;}
+.lp-cta-included{display:flex;flex-direction:column;gap:8px;}
+.lp-ci{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);}
+.pf-ok{color:var(--sp);font-weight:800;font-size:13px;}
+
+/* form */
+.lp-form-inner{background:var(--bg3);border:1px solid var(--border);border-radius:12px;padding:24px 22px;transition:opacity .3s;}
+.lp-form-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;margin-bottom:18px;letter-spacing:-.3px;}
+.lp-form-fields{display:flex;flex-direction:column;gap:13px;}
+.ff{display:flex;flex-direction:column;gap:5px;}
+.ff label{font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.02em;}
+.ff input,.ff select{background:rgba(255,255,255,.04);border:1px solid var(--border2);border-radius:6px;padding:10px 12px;font-size:13px;color:var(--text);font-family:'Manrope',sans-serif;transition:border-color .2s;width:100%;-webkit-appearance:none;}
+.ff input:focus,.ff select:focus{outline:none;border-color:var(--spborder);background:rgba(18,201,135,.04);}
+.ff select{cursor:pointer;}
+.ff input[aria-invalid="true"],.ff select[aria-invalid="true"]{border-color:var(--loss);}
+.form-error{font-size:10px;color:var(--loss);display:none;margin-top:2px;}
+/* honeypot hidden */
+.hp-field{display:none!important;visibility:hidden;position:absolute;left:-9999px;}
+.reg-wa-btn{display:flex;align-items:center;gap:8px;background:#25d366;color:#000;padding:9px 14px;border-radius:8px;font-size:12px;font-weight:800;text-decoration:none;justify-content:center;font-family:'Manrope',sans-serif;transition:all .2s;}
+.reg-wa-btn:hover{background:#20ba58;}
+
+/* plans */
+.plans-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;}
+@media(max-width:900px){.plans-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:480px){.plans-grid{grid-template-columns:1fr;}}
+.plan{background:var(--bg2);border:1px solid var(--border);border-radius:12px;padding:20px 18px;display:flex;flex-direction:column;gap:12px;position:relative;transition:transform .2s,border-color .2s;}
+.plan.featured{border-color:var(--spborder);background:rgba(18,201,135,.03);}
+.plan.featured::before{content:'RECOMENDADO';position:absolute;top:-1px;left:50%;transform:translateX(-50%);background:var(--sp);color:#000;font-family:'IBM Plex Mono',monospace;font-size:8px;font-weight:700;letter-spacing:.1em;padding:3px 10px;border-radius:0 0 6px 6px;}
+.plan:hover{transform:translateY(-2px);}
+.plan-name{font-family:'Syne',sans-serif;font-size:15px;font-weight:800;}
+.plan-price{display:flex;align-items:baseline;gap:2px;margin-top:2px;}
+.plan-num{font-family:'IBM Plex Mono',monospace;font-size:32px;font-weight:600;line-height:1;}
+.plan-num.sp{color:var(--sp2);}
+.plan-num.free{color:var(--muted);}
+.plan-per{font-size:11px;color:var(--muted);}
+.plan-post{font-size:10px;color:var(--muted2);margin-top:2px;}
+.plan-for{font-size:11px;color:var(--muted);border-top:1px solid var(--border);padding-top:10px;font-weight:600;}
+.plan-feats{display:flex;flex-direction:column;gap:6px;}
+.pf{display:flex;align-items:flex-start;gap:7px;font-size:11px;line-height:1.5;}
+.pf-no{color:var(--muted2);}
+.pf-muted{color:var(--muted);}
+.plan-btn{display:flex;align-items:center;justify-content:center;padding:10px;border-radius:6px;font-size:12px;font-weight:800;cursor:pointer;border:none;font-family:'Manrope',sans-serif;transition:all .2s;margin-top:auto;text-align:center;}
+.plan-btn.primary{background:var(--sp);color:#000;}
+.plan-btn.primary:hover{background:var(--sp2);box-shadow:0 0 18px var(--spglow);}
+.plan-btn.ghost{background:rgba(255,255,255,.04);color:var(--text);border:1px solid var(--border);}
+.plan-btn.ghost:hover{background:rgba(255,255,255,.08);}
+.plan-note{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;font-size:11px;color:var(--muted);display:flex;gap:8px;margin-top:4px;}
+
+/* ── MODULE PAGES ── */
+.mod-page{padding-top:56px;min-height:100vh;}
+.mp-hero{position:relative;z-index:1;border-bottom:1px solid var(--border);padding:40px 24px 28px;}
+.mp-inner{max-width:1060px;margin:0 auto;}
+.back-btn{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);cursor:pointer;margin-bottom:18px;transition:color .2s;background:none;border:none;font-family:'Manrope',sans-serif;padding:0;}
+.back-btn:hover{color:var(--text);}
+.mp-tag{display:inline-flex;align-items:center;gap:6px;padding:3px 11px;border-radius:100px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;}
+.mp-tag.sp{background:var(--spdim);border:1px solid var(--spborder);color:var(--sp2);}
+.mp-tag.mk{background:var(--golddim);border:1px solid var(--goldborder);color:var(--gold2);}
+.mp-h1{font-family:'Syne',sans-serif;font-size:clamp(24px,3.5vw,42px);font-weight:800;letter-spacing:-1.5px;line-height:1.05;margin-bottom:8px;}
+.hl-sp{background:linear-gradient(135deg,var(--sp),var(--sp2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hl-mk{background:linear-gradient(135deg,var(--gold),var(--gold2));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.mp-desc{color:var(--muted);font-size:13px;max-width:500px;line-height:1.7;}
+.mp-stats{display:flex;gap:28px;margin-top:18px;flex-wrap:wrap;}
+.mp-stat-n{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;}
+.mp-stat-n.sp{color:var(--sp2);}
+.mp-stat-n.mk{color:var(--gold2);}
+.mp-stat-l{font-size:10px;color:var(--muted);letter-spacing:.04em;margin-top:2px;}
+.mp-body{max-width:1060px;margin:0 auto;padding:28px 24px 80px;}
+
+/* sport/market selector */
+.markets-selector{margin-bottom:22px;}
+.ms-lbl{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.ms-lbl::after{content:'';flex:1;height:1px;background:var(--border);}
+.markets-row{display:flex;flex-wrap:wrap;gap:8px;}
+.st-btn{display:flex;align-items:center;gap:8px;padding:10px 16px;border:1px solid var(--border);border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s;background:rgba(255,255,255,.01);font-family:'Manrope',sans-serif;color:var(--muted);}
+.st-btn.soon{opacity:.35;cursor:default;pointer-events:none;}
+.st-btn:not(.soon):not(.active):hover{border-color:var(--border2);color:var(--text);}
+.st-btn.active.sp{background:var(--spdim);border-color:var(--spborder);color:var(--sp2);}
+.st-btn.active.mk{background:var(--golddim);border-color:var(--goldborder);color:var(--gold2);}
+.st-btn-dot{width:6px;height:6px;border-radius:50%;}
+.st-btn.active.sp .st-btn-dot{background:var(--sp);box-shadow:0 0 6px var(--sp);}
+.st-btn.active.mk .st-btn-dot{background:var(--gold);box-shadow:0 0 6px var(--gold);}
+.st-btn:not(.active) .st-btn-dot{background:var(--muted2);}
+.st-btn-wr{font-family:'Syne',sans-serif;font-size:11px;font-weight:800;margin-left:auto;padding-left:8px;}
+.st-btn.active.sp .st-btn-wr{color:var(--sp2);}
+.st-btn.active.mk .st-btn-wr{color:var(--gold2);}
+
+/* panel */
+.panel{display:none;animation:slideright .3s ease both;}
+.panel.active{display:block;}
+.exec-card{border-radius:12px;padding:20px 22px;margin-bottom:18px;}
+.exec-card.sp{background:var(--bg2);border:1px solid rgba(18,201,135,.18);}
+.exec-card.mk{background:var(--bg2);border:1px solid rgba(200,164,74,.2);}
+.ec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.ec-meta{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:.06em;}
+.live-pill{display:inline-flex;align-items:center;gap:5px;background:var(--windim);border:1px solid rgba(67,217,122,.2);border-radius:100px;padding:2px 8px;font-size:9px;font-weight:700;letter-spacing:.07em;color:var(--win);}
+.ec-teams{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.ec-team{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;}
+.ec-score{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;letter-spacing:4px;}
+.ec-score.sp{color:var(--sp2);}
+.ec-time{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);text-align:center;margin-top:3px;}
+.ec-prices{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.ec-plbl{font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--muted);letter-spacing:.07em;text-transform:uppercase;margin-bottom:3px;}
+.ec-pval{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--gold2);}
+.ec-arr{color:var(--muted);font-size:16px;}
+.sig-head{display:grid;grid-template-columns:1fr auto auto auto;gap:10px;padding:6px 0;font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted2);border-bottom:1px solid var(--border);margin-bottom:2px;}
+.sig-row{display:grid;grid-template-columns:1fr auto auto auto;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.sig-row:last-child{border-bottom:none;}
+.sig-d{font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);}
+
+/* models grid */
+.sec-title{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:10px;}
+.sec-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.models-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin-bottom:24px;}
+.mc{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:18px 18px;display:flex;flex-direction:column;gap:10px;transition:all .22s;}
+.mc.click{cursor:pointer;}
+.mc.click.sp:hover{border-color:var(--spborder);background:rgba(18,201,135,.03);transform:translateY(-2px);}
+.mc.click.mk:hover{border-color:var(--goldborder);background:rgba(200,164,74,.03);transform:translateY(-2px);}
+.mc.dim{opacity:.36;cursor:default;}
+.mc-top{display:flex;justify-content:space-between;align-items:flex-start;}
+.mc-name{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;letter-spacing:-.2px;}
+.mc-badge{font-size:8px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);background:rgba(255,255,255,.04);padding:2px 6px;border-radius:3px;}
+.mc-wr{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;line-height:1;}
+.mc.sp .mc-wr{color:var(--sp2);}
+.mc.mk .mc-wr{color:var(--gold2);}
+.mc-wr.na{color:var(--muted);font-size:18px;}
+.mc-bar-bg{height:3px;background:rgba(255,255,255,.05);border-radius:100px;overflow:hidden;}
+.mc.sp .mc-bar-fill{height:100%;border-radius:100px;background:var(--sp);}
+.mc.mk .mc-bar-fill{height:100%;border-radius:100px;background:var(--gold);}
+.mc-meta{display:flex;justify-content:space-between;font-family:'IBM Plex Mono',monospace;font-size:10px;color:var(--muted);}
+.mc-badge-status{font-size:8px;font-weight:700;padding:2px 6px;border-radius:3px;font-family:'IBM Plex Mono',monospace;}
+.mc-badge-status.depuracion{background:rgba(245,158,11,.1);color:var(--warn);border:1px solid rgba(245,158,11,.25);}
+.mc-badge-status.suspendido{background:var(--lossdim);color:var(--loss);border:1px solid rgba(224,79,79,.22);}
+.mc-link{display:flex;align-items:center;justify-content:space-between;font-size:11px;font-weight:600;padding-top:8px;border-top:1px solid var(--border);}
+.mc.sp.click .mc-link{color:var(--sp2);}
+.mc.mk.click .mc-link{color:var(--gold2);}
+
+/* cta band */
+.cta-band{border-radius:12px;padding:22px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;}
+.cta-band.sp{background:linear-gradient(135deg,rgba(18,201,135,.07),rgba(18,201,135,.02));border:1px solid var(--spborder);}
+.cta-band.mk{background:linear-gradient(135deg,rgba(200,164,74,.08),rgba(200,164,74,.02));border:1px solid var(--goldborder);}
+.cb-title{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;letter-spacing:-.3px;margin-bottom:3px;}
+.cb-sub{color:var(--muted);font-size:12px;}
+.cb-btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;border-radius:6px;font-size:12px;font-weight:800;text-decoration:none;white-space:nowrap;transition:all .2s;cursor:pointer;border:none;font-family:'Manrope',sans-serif;}
+.cb-btn.sp{background:var(--spdim);color:var(--sp2);border:1px solid var(--spborder);}
+.cb-btn.sp:hover{background:rgba(18,201,135,.16);box-shadow:0 0 18px var(--spglow);transform:translateY(-1px);}
+.cb-btn.mk{background:var(--gold);color:#000;}
+.cb-btn.mk:hover{background:var(--gold2);box-shadow:0 0 18px var(--goldglow);}
+
+/* progress bar */
+.prog-card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:16px 18px;margin-bottom:18px;}
+.pc-row{display:flex;justify-content:space-between;margin-bottom:6px;}
+.pc-lbl{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);}
+.pc-val{font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--gold2);}
+.pc-bar{height:3px;background:rgba(255,255,255,.05);border-radius:100px;overflow:hidden;margin-bottom:12px;}
+.pc-fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:100px;animation:grow 1.5s .3s ease both;}
+.pc-perks{display:flex;flex-direction:column;gap:5px;}
+.pc-perk{display:flex;align-items:flex-start;gap:7px;font-size:11px;color:var(--muted);}
+.pc-perk::before{content:'→';color:var(--gold);font-size:10px;flex-shrink:0;margin-top:2px;}
+
+/* module register form inside pages */
+.reg-block{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:28px;margin-top:24px;}
+.reg-block-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:6px;}
+.reg-block-sub{font-size:13px;color:var(--muted);margin-bottom:20px;}
+.reg-form{display:flex;flex-direction:column;gap:13px;max-width:480px;}
+.reg-form-2col{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+@media(max-width:500px){.reg-form-2col{grid-template-columns:1fr;}}
+.reg-success{display:none;text-align:center;padding:24px;}
+.reg-success.on{display:block;}
+.reg-success-icon{font-size:40px;margin-bottom:10px;}
+.reg-success-title{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:6px;}
+.reg-success-sub{font-size:13px;color:var(--muted);margin-bottom:16px;}
+
+/* ── MODAL ── */
+.modal-ov{position:fixed;inset:0;z-index:500;background:rgba(4,6,10,.92);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;padding:16px;opacity:0;pointer-events:none;transition:opacity .25s;}
+.modal-ov.open{opacity:1;pointer-events:all;}
+.modal{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;width:100%;max-width:600px;max-height:90vh;overflow-y:auto;transform:translateY(14px);transition:transform .28s ease;}
+.modal-ov.open .modal{transform:translateY(0);}
+.m-head{display:flex;justify-content:space-between;align-items:flex-start;padding:20px 22px 14px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--bg2);z-index:1;}
+.m-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;letter-spacing:-.3px;}
+.m-sub{color:var(--muted);font-size:11px;margin-top:3px;}
+.m-close{width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,.05);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;color:var(--muted);transition:all .2s;flex-shrink:0;}
+.m-close:hover{background:rgba(255,255,255,.1);}
+.m-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border-bottom:1px solid var(--border);}
+.m-stat{background:var(--bg2);padding:14px 10px;text-align:center;}
+.m-stat-n{font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:600;}
+.m-stat-l{font-size:10px;color:var(--muted);letter-spacing:.04em;margin-top:3px;}
+.m-chart{padding:18px 22px 0;}
+.m-chart-lbl{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;}
+svg.wr-svg{width:100%;height:72px;overflow:visible;}
+.m-hist{padding:14px 22px 0;}
+.m-hist-lbl{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;display:flex;align-items:center;gap:8px;}
+.m-hist-lbl::after{content:'';flex:1;height:1px;background:var(--border);}
+.hist-row{display:grid;grid-template-columns:72px 1fr auto auto;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border);font-size:11px;}
+.hist-row:last-child{border-bottom:none;}
+.h-date{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);}
+.h-prob{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);}
+.m-foot{padding:14px 22px 18px;border-top:1px solid var(--border);text-align:center;}
+.m-disc{font-size:10px;color:var(--muted2);line-height:1.6;}
+
+/* ── AI FLOAT ── */
+.ai-float{position:fixed;bottom:22px;right:22px;z-index:300;display:flex;flex-direction:column;align-items:flex-end;gap:8px;}
+.ai-popup{background:var(--bg2);border:1px solid var(--border2);border-radius:14px;padding:16px;width:260px;box-shadow:0 12px 40px rgba(0,0,0,.45);display:none;animation:floatin .2s ease;}
+.ai-popup.open{display:block;}
+.ai-popup-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:var(--gold2);margin-bottom:4px;}
+.ai-popup-sub{font-size:11px;color:var(--muted);margin-bottom:14px;line-height:1.55;}
+.ai-popup-note{font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--muted);text-align:center;margin-top:8px;letter-spacing:.06em;}
+.ai-float-row{display:flex;align-items:center;gap:8px;}
+.ai-pill{background:var(--bg2);border:1px solid var(--spborder);border-radius:100px;padding:4px 12px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--sp2);letter-spacing:.07em;cursor:pointer;}
+.ai-fab{width:52px;height:52px;border-radius:50%;background:var(--gold);color:#000;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 20px rgba(200,164,74,.35);transition:all .2s;}
+.ai-fab:hover{background:var(--gold2);transform:scale(1.06);}
+
+/* ── STICKY MOBILE CTA ── */
+.sticky-mob{display:none;position:fixed;bottom:0;left:0;right:0;z-index:350;padding:12px 16px;background:rgba(7,9,13,.97);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--spborder);align-items:center;justify-content:space-between;gap:12px;transition:transform .3s ease;}
+@media(max-width:700px){.sticky-mob{display:flex;}}
+.sticky-mob.hidden{transform:translateY(100%);}
+.smc-text{font-size:11px;color:var(--muted);line-height:1.4;}
+.smc-text strong{color:var(--sp2);display:block;font-size:13px;font-family:'Syne',sans-serif;}
+.smc-btn{background:var(--sp);color:#000;padding:10px 18px;border-radius:6px;font-size:12px;font-weight:800;cursor:pointer;border:none;font-family:'Manrope',sans-serif;white-space:nowrap;flex-shrink:0;}
+
+/* ── FOOTER ── */
+footer{position:relative;z-index:1;border-top:1px solid var(--border);padding:32px 24px;}
+.footer-inner{max-width:1060px;margin:0 auto;}
+.footer-top{display:flex;justify-content:space-between;flex-wrap:wrap;gap:28px;margin-bottom:24px;}
+.f-brand{display:flex;align-items:center;gap:7px;font-family:'Syne',sans-serif;font-weight:800;font-size:15px;margin-bottom:6px;}
+.f-tagline{font-size:11px;color:var(--muted);max-width:200px;line-height:1.6;}
+.footer-links{display:flex;gap:32px;flex-wrap:wrap;}
+.fl-col h4{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted2);margin-bottom:10px;}
+.fl-col a{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;cursor:pointer;transition:color .2s;text-decoration:none;font-weight:500;}
+.fl-col a:hover{color:var(--text);}
+.footer-disc{border-top:1px solid var(--border);padding-top:18px;font-size:10px;color:var(--muted2);line-height:1.75;}
+
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* ── HOME PRICE SUMMARY CARDS ── */
+.home-price-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;}
+@media(max-width:680px){.home-price-grid{grid-template-columns:1fr;}}
+.hpc-card{background:var(--bg2);border:1px solid var(--border);border-radius:14px;padding:28px 26px;display:flex;flex-direction:column;gap:16px;cursor:pointer;transition:all .25s;position:relative;overflow:hidden;}
+.hpc-card::before{content:'';position:absolute;inset:0;opacity:0;transition:opacity .3s;pointer-events:none;}
+.hpc-card.sp::before{background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(18,201,135,.06),transparent);}
+.hpc-card.mk::before{background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(200,164,74,.06),transparent);}
+.hpc-card:hover::before{opacity:1;}
+.hpc-card.sp:hover{border-color:var(--spborder);transform:translateY(-3px);box-shadow:0 12px 40px rgba(18,201,135,.08);}
+.hpc-card.mk:hover{border-color:var(--goldborder);transform:translateY(-3px);box-shadow:0 12px 40px rgba(200,164,74,.08);}
+.hpc-badge{display:inline-flex;align-items:center;gap:6px;padding:3px 11px;border-radius:100px;font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;width:fit-content;}
+.hpc-badge.sp{background:var(--spdim);border:1px solid var(--spborder);color:var(--sp2);}
+.hpc-badge.mk{background:var(--golddim);border:1px solid var(--goldborder);color:var(--gold2);}
+.hpc-title{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;letter-spacing:-.5px;line-height:1.1;}
+.hpc-desc{font-size:12px;color:var(--muted);line-height:1.65;margin-top:-8px;}
+.hpc-price-row{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.hpc-from{font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted2);letter-spacing:.07em;text-transform:uppercase;margin-bottom:3px;}
+.hpc-price{font-family:'IBM Plex Mono',monospace;font-size:38px;font-weight:700;line-height:1;}
+.hpc-price.sp{color:var(--sp2);}
+.hpc-price.mk{color:var(--gold2);}
+.hpc-mo{font-size:14px;font-weight:400;color:var(--muted);margin-left:2px;}
+.hpc-wr-badge{display:inline-flex;align-items:center;padding:5px 12px;border-radius:100px;font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.04em;white-space:nowrap;}
+.hpc-wr-badge.sp{background:var(--spdim);border:1px solid var(--spborder);color:var(--sp2);}
+.hpc-wr-badge.mk{background:var(--golddim);border:1px solid var(--goldborder);color:var(--gold2);}
+.hpc-bullets{display:flex;flex-direction:column;gap:5px;padding-top:4px;border-top:1px solid var(--border);}
+.hpc-bullets span{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:6px;}
+.hpc-bullets span::before{content:'→';font-size:10px;flex-shrink:0;}
+.hpc-bullets span.sp::before{color:var(--sp);}
+.hpc-bullets span.mk::before{color:var(--gold);}
+.hpc-cta{display:flex;align-items:center;justify-content:space-between;font-size:12px;font-weight:800;padding-top:14px;border-top:1px solid var(--border);margin-top:auto;letter-spacing:.01em;}
+.hpc-cta.sp{color:var(--sp2);}
+.hpc-cta.mk{color:var(--gold2);}
+
+/* ── MODULE PLANS BLOCK (inside panels) ── */
+.panel-plans{margin-top:24px;margin-bottom:4px;}
+.panel-plans-title{font-family:'IBM Plex Mono',monospace;font-size:8px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.panel-plans-title::after{content:'';flex:1;height:1px;background:var(--border);}
+.panel-plans-note{background:rgba(18,201,135,.04);border:1px solid rgba(18,201,135,.12);border-radius:8px;padding:10px 14px;font-size:11px;color:var(--sp2);margin-bottom:14px;display:flex;align-items:flex-start;gap:8px;line-height:1.55;}
+.panel-plans-note.nba{background:rgba(249,115,22,.04);border-color:rgba(249,115,22,.15);color:var(--nba2);}
+</style>
+</head>
+<body>
+
+<!-- ════ NAV ════ -->
+<nav>
+  <div class="nav-logo" onclick="go('home')"><div class="ndot"></div>APA Core</div>
+  <div class="nav-links">
+    <button class="nav-link hide-mob" onclick="go('sport')">APA Sport</button>
+    <button class="nav-link hide-mob" onclick="go('markets')">APA Markets</button>
+    <div class="nav-score" onclick="go('sport')"><div class="ldot"></div>78.9% WR · 109 props</div>
+    <button class="nav-cta" onclick="go('sport');setTimeout(()=>document.getElementById('reg-anchor').scrollIntoView({behavior:'smooth'}),280)">Probar gratis →</button>
+  </div>
+</nav>
+
+<!-- ════════════════════════════════════════════════
+     HOME PAGE
+════════════════════════════════════════════════ -->
+<div class="page active" id="page-home">
+
+<!-- Ticker -->
+<div class="lp-ticker-wrap" style="margin-top:56px">
+  <div class="lp-ticker">
+    <div class="lp-ticker-inner" id="tickerInner" aria-hidden="true">
+      <span class="tk-item win">⚽ Tarjetas Over 2.5 · España vs Serbia <strong>✓ WIN</strong> 88%</span>
+      <span class="tk-sep">·</span>
+      <span class="tk-item win">🪙 XAU/USD Buy Over 3,040 · Sesión NY <strong>✓ WIN</strong> 78%</span>
+      <span class="tk-sep">·</span>
+      <span class="tk-item win">⚽ Corners Under 6.5 · Marruecos vs Ecuador <strong>✓ WIN</strong> 92%</span>
+      <span class="tk-sep">·</span>
+      <span class="tk-item loss">⚽ BTTS No · Marruecos vs Ecuador <strong>✗ LOSS</strong> 88%</span>
+      <span class="tk-sep">·</span>
+      <span class="tk-item win">🏀 LeBron Over 26.5 pts · Lakers vs Warriors <strong>✓ WIN</strong> 71%</span>
+      <span class="tk-sep">·</span>
+      <span class="tk-item win">⚽ Shots Under 22.5 · Leeds vs Norwich <strong>✓ WIN</strong> 95%</span>
+      <span class="tk-sep">·</span>
+      <span class="tk-item loss">⚽ Corners Under 8.5 · Suiza vs Alemania <strong>✗ LOSS</strong> 63%</span>
+      <span class="tk-sep">·</span>
+      <span class="tk-item win">⚽ Tarjetas Over 1.5 · Suiza vs Alemania <strong>✓ WIN</strong> 82%</span>
+      <span class="tk-sep">·</span>
+      <span class="tk-item win">🏀 Tatum Over 28.5 pts · Celtics vs Nets <strong>✓ WIN</strong> 70%</span>
+      <span class="tk-sep">·</span>
+      <span class="tk-item win">⚽ Tarjetas Over 2.5 · Marruecos vs Ecuador <strong>✓ WIN</strong> 72%</span>
+      <span class="tk-sep">·</span>
+      <span class="tk-item win">🪙 XAU/USD Buy Resistencia 3,050 <strong>✓ WIN</strong> 65%</span>
+      <span class="tk-sep">·</span>
+      <span class="tk-item win">🏀 Jokic Over 24.5 pts · Nuggets vs Suns <strong>✓ WIN</strong> 73%</span>
+      <span class="tk-sep">·</span>
+      <!-- duplicate for seamless loop -->
+      <span class="tk-item win">⚽ Tarjetas Over 2.5 · España vs Serbia <strong>✓ WIN</strong> 88%</span>
+      <span class="tk-sep">·</span>
+      <span class="tk-item win">🪙 XAU/USD Buy Over 3,040 · Sesión NY <strong>✓ WIN</strong> 78%</span>
+      <span class="tk-sep">·</span>
+      <span class="tk-item win">⚽ Corners Under 6.5 · Marruecos vs Ecuador <strong>✓ WIN</strong> 92%</span>
+      <span class="tk-sep">·</span>
+      <span class="tk-item loss">⚽ BTTS No · Marruecos vs Ecuador <strong>✗ LOSS</strong> 88%</span>
+      <span class="tk-sep">·</span>
+      <span class="tk-item win">🏀 LeBron Over 26.5 pts · Lakers vs Warriors <strong>✓ WIN</strong> 71%</span>
+      <span class="tk-sep">·</span>
+    </div>
+  </div>
+</div>
+
+<!-- Hero -->
+<section class="lp-hero" style="min-height:calc(100vh - 36px)">
+  <div class="lp-hero-bg">
+    <div class="lp-hero-glow lp-hero-glow-1"></div>
+    <div class="lp-hero-glow lp-hero-glow-2"></div>
+    <div class="lp-grid-overlay"></div>
+  </div>
+  <div class="lp-hero-content">
+    <div class="lp-eyebrow"><div class="ldot"></div>Track record auditado · apacore.io · LATAM &amp; España</div>
+    <h1 class="lp-h1">
+      <span class="lp-h1-pre">De cada 10 análisis publicados,</span>
+      <span class="lp-h1-big"><span id="wrCounter">78</span><span class="lp-pct">%</span></span>
+      <span class="lp-h1-post">acertamos. Wins y losses.<br>Audítalo tú mismo.</span>
+    </h1>
+    <p class="lp-sub">Track record público e inmutable desde el primer día. 109 pronósticos verificados — ninguno editado, ninguno borrado. Señales deportivas y financieras directamente en tu WhatsApp.</p>
+    <div class="lp-hero-actions">
+      <button class="lp-cta-primary" onclick="document.getElementById('reg-anchor').scrollIntoView({behavior:'smooth'})">🎯 Activar 5 días gratis →</button>
+      <button class="lp-cta-secondary" onclick="go('sport')">Ver track record completo</button>
+    </div>
+    <div class="lp-microcopy">Sin tarjeta de crédito · Sin app · Señal directa a tu WhatsApp</div>
+  </div>
+  <div class="lp-hero-strip">
+    <div class="lp-strip-inner">
+      <div class="lp-strip-item"><div class="lp-strip-num sp">78.9%</div><div class="lp-strip-lbl">Win Rate Global</div></div>
+      <div class="lp-strip-div"></div>
+      <div class="lp-strip-item"><div class="lp-strip-num sp">109</div><div class="lp-strip-lbl">Props verificadas</div></div>
+      <div class="lp-strip-div"></div>
+      <div class="lp-strip-item"><div class="lp-strip-num sp">38+</div><div class="lp-strip-lbl">Partidos analizados</div></div>
+      <div class="lp-strip-div"></div>
+      <div class="lp-strip-item"><div class="lp-strip-num sp">93%</div><div class="lp-strip-lbl">WR Tarjetas ⭐</div></div>
+      <div class="lp-strip-div"></div>
+      <div class="lp-strip-item"><div class="lp-strip-num mk">0</div><div class="lp-strip-lbl">Ediciones retroactivas</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROOF SECTION -->
+<section class="lp-section lp-section-alt" id="lp-proof">
+  <div class="lp-container">
+    <div class="lp-section-tag"><div class="ldot"></div>El registro no miente</div>
+    <h2 class="lp-h2">Resultados reales.<br><span class="lp-h2-hl">Sin editar. Sin excusas.</span></h2>
+    <p class="lp-h2-sub">Publicamos cada análisis antes del partido. El resultado queda inmutable. No borramos pérdidas.</p>
+    <div class="lp-proof-grid">
+      <div class="lp-proof-card">
+        <div class="lp-pc-label">Win Rate global acumulado</div>
+        <div class="lp-pc-num" style="color:var(--sp2)">78.9<span style="font-size:28px">%</span></div>
+        <div class="lp-pc-bar-bg"><div class="lp-pc-bar-fill" style="width:78.9%;background:linear-gradient(90deg,var(--sp),var(--sp2))"></div></div>
+        <div class="lp-pc-badge">⭐ Nivel 3 CONSOLIDADO</div>
+        <div class="lp-pc-sub">86 wins · 23 losses · 109 props totales</div>
+      </div>
+      <div class="lp-proof-card">
+        <div class="lp-pc-label">Señales ejecutadas</div>
+        <div class="lp-pc-num" style="color:var(--text)">109</div>
+        <div class="lp-pc-sub">En 38+ partidos desde S1 · S3 · S4 · S5</div>
+        <div style="height:1px;background:var(--border);margin:4px 0"></div>
+        <div class="lp-pc-label" style="margin-top:4px">Última sesión (S4 · 31 Mar)</div>
+        <div style="font-family:'IBM Plex Mono',monospace;font-size:20px;font-weight:600;color:var(--sp2)">89.7%</div>
+        <div class="lp-pc-sub">39 props · Eliminatorias UEFA · ⭐ sesión récord</div>
+      </div>
+      <div class="lp-proof-cats">
+        <div class="lp-cat-title">Win Rate por categoría (Football)</div>
+        <div class="lp-cat-row">
+          <div class="lp-cat-name">🟡 Tarjetas</div>
+          <div class="lp-cat-bar"><div style="width:93%;background:var(--sp)"></div></div>
+          <div class="lp-cat-pct" style="color:var(--sp2)">93% ⭐</div>
+        </div>
+        <div class="lp-cat-row">
+          <div class="lp-cat-name">📐 Shots totales</div>
+          <div class="lp-cat-bar"><div style="width:86%;background:var(--sp)"></div></div>
+          <div class="lp-cat-pct" style="color:var(--sp2)">86%</div>
+        </div>
+        <div class="lp-cat-row">
+          <div class="lp-cat-name">🎯 Shots arco</div>
+          <div class="lp-cat-bar"><div style="width:73%;background:var(--sp)"></div></div>
+          <div class="lp-cat-pct" style="color:var(--sp2)">73%</div>
+        </div>
+        <div class="lp-cat-row">
+          <div class="lp-cat-name">📐 Córners</div>
+          <div class="lp-cat-bar"><div style="width:75%;background:var(--sp)"></div></div>
+          <div class="lp-cat-pct" style="color:var(--sp2)">75%</div>
+        </div>
+        <div class="lp-cat-divider"></div>
+        <div class="lp-cat-title">NBA</div>
+        <div class="lp-cat-row">
+          <div class="lp-cat-name">🏀 Puntos props</div>
+          <div class="lp-cat-bar"><div style="width:90%;background:var(--nba)"></div></div>
+          <div class="lp-cat-pct" style="color:var(--nba2)">90% ⭐</div>
+        </div>
+        <div class="lp-cat-row">
+          <div class="lp-cat-name">🏀 Asistencias</div>
+          <div class="lp-cat-bar"><div style="width:86%;background:var(--nba)"></div></div>
+          <div class="lp-cat-pct" style="color:var(--nba2)">86%</div>
+        </div>
+        <div class="lp-cat-row">
+          <div class="lp-cat-name">⚽ BTTS</div>
+          <div class="lp-cat-bar"><div style="width:57%;background:var(--warn)"></div></div>
+          <div class="lp-cat-pct" style="color:var(--warn)">57%</div>
+        </div>
+        <div class="lp-cat-depuracion">⚠ BTTS en depuración — lo publicamos igual</div>
+      </div>
+    </div>
+    <!-- Recent signals preview -->
+    <div class="lp-signals-preview">
+      <div class="lp-sp-header">
+        <div class="lp-sp-title">Últimas señales ejecutadas</div>
+        <button class="lp-sp-cta" onclick="go('sport')">Ver todas las 109 →</button>
+      </div>
+      <div class="lp-sp-rows">
+        <div class="lp-sp-row">
+          <span>⚽</span><span style="font-weight:600">España vs Serbia</span><span class="lp-sp-prop">Tarjetas Over 2.5 · Amistoso FIFA</span><span class="lp-sp-prob">88%</span><span class="chip win">✓ WIN</span>
+        </div>
+        <div class="lp-sp-row">
+          <span>⚽</span><span style="font-weight:600">Marruecos vs Ecuador</span><span class="lp-sp-prop">Corners Under 6.5 · Amistoso FIFA</span><span class="lp-sp-prob">92%</span><span class="chip win">✓ WIN</span>
+        </div>
+        <div class="lp-sp-row">
+          <span>⚽</span><span style="font-weight:600">Marruecos vs Ecuador</span><span class="lp-sp-prop">BTTS No · Amistoso FIFA</span><span class="lp-sp-prob">88%</span><span class="chip loss">✗ LOSS</span>
+        </div>
+        <div class="lp-sp-row">
+          <span>🏀</span><span style="font-weight:600">Lakers vs Warriors</span><span class="lp-sp-prop">LeBron Over 26.5 pts · NBA Oeste</span><span class="lp-sp-prob">71%</span><span class="chip win">✓ WIN</span>
+        </div>
+        <div class="lp-sp-row">
+          <span>⚽</span><span style="font-weight:600">Suiza vs Alemania</span><span class="lp-sp-prop">Tarjetas Over 1.5 · Amistoso FIFA</span><span class="lp-sp-prob">82%</span><span class="chip win">✓ WIN</span>
+        </div>
+        <div class="lp-sp-row">
+          <span>⚽</span><span style="font-weight:600">Suiza vs Alemania</span><span class="lp-sp-prop">Corners Under 8.5 · Amistoso FIFA</span><span class="lp-sp-prob">63%</span><span class="chip loss">✗ LOSS</span>
+        </div>
+      </div>
+      <div class="lp-sp-footer">
+        <span style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted)">Wins y losses publicados con igual visibilidad · Sin ediciones retroactivas</span>
+        <button class="lp-sp-cta" onclick="go('sport')">Auditar track record completo →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="lp-section" id="lp-how">
+  <div class="lp-container">
+    <div class="lp-section-tag"><div class="ldot"></div>Cómo funciona</div>
+    <h2 class="lp-h2">Del análisis a tu<br><span class="lp-h2-hl">WhatsApp en minutos.</span></h2>
+    <p class="lp-h2-sub">APA analiza datos en tiempo real, calcula el edge real sobre el mercado, y te envía la señal cuando la ventaja es suficiente para operar.</p>
+    <div class="lp-how-grid">
+      <div class="lp-how-card">
+        <div class="lp-how-num">01</div>
+        <div class="lp-how-title">Señal Pre-Partido</div>
+        <div class="lp-how-desc">Con las alineaciones confirmadas, APA genera el análisis previo: resultado esperado, mercados activos, fundamento estadístico. Football y NBA incluidos en planes Pro y Élite.</div>
+      </div>
+      <div class="lp-how-card">
+        <div class="lp-how-num">02</div>
+        <div class="lp-how-title">Señal en Vivo + Señales Markets</div>
+        <div class="lp-how-desc">Al descanso, APA analiza datos en vivo y genera señales con edge real. En Markets, evalúa el setup en sesión activa (London, NY) con árbol de 9 pasos.</div>
+      </div>
+      <div class="lp-how-card">
+        <div class="lp-how-num">03</div>
+        <div class="lp-how-title">Señal directa a tu WhatsApp</div>
+        <div class="lp-how-desc">Recibes prop + probabilidad APA + stake recomendado + edge calculado. Sin app, sin login. En tu celular en segundos.</div>
+      </div>
+      <div class="lp-how-card">
+        <div class="lp-how-num">04</div>
+        <div class="lp-how-title">Resultado publicado</div>
+        <div class="lp-how-desc">Cada resultado — win o loss — se publica en el track record público de apacore.io. Inmutable. Auditado. Sin excusas.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DIFFERENTIATION -->
+<section class="lp-section lp-section-alt" id="lp-diff">
+  <div class="lp-container">
+    <div class="lp-section-tag"><div class="ldot"></div>Por qué APA es diferente</div>
+    <h2 class="lp-h2">Lo que hace<br><span class="lp-h2-hl">cada plataforma vs APA.</span></h2>
+    <div class="lp-diff-grid">
+      <div class="lp-diff-col">
+        <h3><span style="color:var(--loss)">✗</span> El resto del mercado</h3>
+        <div class="lp-diff-item no">Publican solo wins. Los losses desaparecen.</div>
+        <div class="lp-diff-item no">WR no verificable, sin historial transparente</div>
+        <div class="lp-diff-item no">Testimonios no auditables</div>
+        <div class="lp-diff-item no">Editan resultados retroactivamente</div>
+        <div class="lp-diff-item no">Sin stake ni edge calculado</div>
+        <div class="lp-diff-item no">Señal genérica, sin probabilidad exacta</div>
+      </div>
+      <div class="lp-diff-col">
+        <h3><span style="color:var(--sp)">✓</span> APA Core</h3>
+        <div class="lp-diff-item">Wins y losses publicados con igual visibilidad</div>
+        <div class="lp-diff-item">78.9% WR auditado señal por señal</div>
+        <div class="lp-diff-item">Sin testimonios — solo el track record habla</div>
+        <div class="lp-diff-item">0 ediciones retroactivas desde el día 1</div>
+        <div class="lp-diff-item">Stake + edge calculado en cada señal</div>
+        <div class="lp-diff-item">Probabilidad APA exacta por categoría</div>
+      </div>
+    </div>
+    <div class="lp-posit">
+      <div class="lp-posit-quote">"La ventaja no se improvisa. Se calcula."</div>
+      <div class="lp-posit-sub">El sistema rechaza automáticamente los partidos sin edge suficiente. Cuando APA no opera, también te lo decimos.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOMO -->
+<section class="lp-section lp-fomo" id="lp-urgency">
+  <div class="lp-container">
+    <div class="lp-fomo-inner">
+      <div class="lp-fomo-left">
+        <div class="lp-fomo-tag">⚡ Por qué el tiempo importa</div>
+        <h2 class="lp-fomo-h2">Las cuotas cambian<br>en minutos.</h2>
+        <p class="lp-fomo-desc">El edge que APA detecta existe en una ventana específica. Cuando las casas actualizan sus odds, la ventaja desaparece. Los suscriptores que actúan rápido capturan el valor real.</p>
+        <div class="lp-fomo-facts">
+          <div class="lp-fomo-fact"><span class="lp-ff-icon">⏱</span><span>La señal llega antes de que el mercado se mueva</span></div>
+          <div class="lp-fomo-fact"><span class="lp-ff-icon">📉</span><span>Las odds de alta probabilidad desaparecen en 3–8 minutos</span></div>
+          <div class="lp-fomo-fact"><span class="lp-ff-icon">🎯</span><span>El edge APA promedio: +15–22% sobre el mercado</span></div>
+        </div>
+      </div>
+      <div class="lp-fomo-right">
+        <div class="lp-fomo-card">
+          <div class="lp-fomo-card-title">Ejemplo de señal activa</div>
+          <div class="lp-fomo-signal">
+            <div style="font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);margin-bottom:6px;letter-spacing:.07em">SEÑAL REAL EJECUTADA · AMISTOSO FIFA</div>
+            <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;margin-bottom:4px">España vs Serbia</div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);margin:10px 0;">
+              <span style="font-size:12px;color:var(--muted)">Tarjetas Over 2.5</span>
+              <span style="font-family:'IBM Plex Mono',monospace;font-size:18px;font-weight:600;color:var(--sp2)">88%</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted)">
+              <span>Edge: <strong style="color:var(--sp2)">+66%</strong></span>
+              <span>Resultado: <strong style="color:var(--win)">✓ WIN</strong></span>
+            </div>
+          </div>
+          <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+            <button class="lp-cta-primary" style="font-size:12px;padding:10px 20px;width:100%;justify-content:center" onclick="document.getElementById('reg-anchor').scrollIntoView({behavior:'smooth'})">Quiero señales así →</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MODULES -->
+<section class="lp-section" id="lp-modules" style="background:var(--bg2);border-top:1px solid var(--border);border-bottom:1px solid var(--border);">
+  <div class="lp-container">
+    <div class="lp-section-tag"><div class="ldot"></div>Módulos APA Core</div>
+    <h2 class="lp-h2">Deportes o Mercados.<br><span class="lp-h2-hl">Un solo estándar.</span></h2>
+    <div class="hc-grid" style="margin-bottom:16px;">
+      <div class="hc-card sp" onclick="go('sport')">
+        <div class="hc-card-top">
+          <div class="hc-badge sp"><div class="ldot"></div>APA Sport</div>
+          <div class="hc-wr sp">78.9%</div>
+        </div>
+        <div class="hc-title">Análisis Deportivo</div>
+        <div class="hc-subtitle">Football · NBA · Señales por WhatsApp</div>
+        <div class="hc-preview">
+          <div class="hc-preview-label">Última sesión ejecutada · 27 Mar 2026</div>
+          <div class="hc-preview-match">
+            <span class="hc-team">Marruecos</span>
+            <span class="hc-score sp">1 — 1</span>
+            <span class="hc-team">Ecuador</span>
+          </div>
+          <div class="hc-signals">
+            <div class="hcs"><span>Corners Under 6.5</span><span class="hcs-p">92%</span><span class="chip win">✓ WIN</span></div>
+            <div class="hcs"><span>Tarjetas Over 2.5</span><span class="hcs-p">72%</span><span class="chip win">✓ WIN</span></div>
+            <div class="hcs"><span>BTTS No</span><span class="hcs-p">88%</span><span class="chip loss">✗ LOSS</span></div>
+          </div>
+        </div>
+        <div class="hc-stats">
+          <div class="hcs-stat"><div class="hcs-n sp">93%</div><div class="hcs-l">WR Tarjetas ⭐</div></div>
+          <div class="hcs-stat"><div class="hcs-n sp">86%</div><div class="hcs-l">WR Shots</div></div>
+          <div class="hcs-stat"><div class="hcs-n sp">90%</div><div class="hcs-l">WR NBA Pts ⭐</div></div>
+        </div>
+        <div class="hc-sports">
+          <span class="hcs-chip sp">⚽ Football</span>
+          <span class="hcs-chip nba">🏀 NBA</span>
+          <span class="hcs-chip soon">🎾 Tenis próx.</span>
+        </div>
+        <div class="hc-cta sp">Ver APA Sport · Planes desde $19/mes <span>→</span></div>
+      </div>
+      <div class="hc-card mk" onclick="go('markets')">
+        <div class="hc-card-top">
+          <div class="hc-badge mk"><div class="ndot" style="width:5px;height:5px;"></div>APA Markets</div>
+          <div class="hc-wr mk">72%</div>
+        </div>
+        <div class="hc-title">Mercados Financieros</div>
+        <div class="hc-subtitle">Gold XAU/USD · Modelo de gestión</div>
+        <div class="hc-preview">
+          <div class="hc-preview-label">Último trade · Sesión NY · 28 Mar 2026</div>
+          <div class="hc-trade">
+            <div><div style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--muted);margin-bottom:3px">ENTRADA</div><div class="hc-price mk">3,036.40</div></div>
+            <div style="color:var(--muted);font-size:20px;padding-top:12px">→</div>
+            <div style="text-align:right"><div style="font-family:'IBM Plex Mono',monospace;font-size:8px;color:var(--muted);margin-bottom:3px">CIERRE</div><div class="hc-price mk">3,048.20</div></div>
+          </div>
+          <div class="hc-signals">
+            <div class="hcs"><span>Buy · Over 3,040</span><span class="hcs-p">78%</span><span class="chip win">✓ WIN</span></div>
+            <div class="hcs"><span>Buy · Res. 3,050</span><span class="hcs-p">65%</span><span class="chip win">✓ WIN</span></div>
+            <div class="hcs"><span>Sell · Under 3,028</span><span class="hcs-p">61%</span><span class="chip loss">✗ LOSS</span></div>
+          </div>
+        </div>
+        <div class="hc-stats">
+          <div class="hcs-stat"><div class="hcs-n mk">78%</div><div class="hcs-l">WR Buy Signal</div></div>
+          <div class="hcs-stat"><div class="hcs-n mk">25</div><div class="hcs-l">Señales</div></div>
+          <div class="hcs-stat"><div class="hcs-n mk">25/100</div><div class="hcs-l">Track record</div></div>
+        </div>
+        <div class="hc-progress">
+          <div style="display:flex;justify-content:space-between;margin-bottom:5px;font-family:'IBM Plex Mono',monospace;font-size:9px;color:var(--muted);"><span>Construyendo track record</span><span style="color:var(--gold2)">25/100</span></div>
+          <div style="height:3px;background:rgba(255,255,255,.05);border-radius:100px;overflow:hidden;"><div style="width:25%;height:100%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:100px;animation:grow 1.5s ease both;"></div></div>
+        </div>
+        <div class="hc-cta mk">Ver APA Markets · Lista de espera <span>→</span></div>
+      </div>
+    </div>
+    <div class="hc-trust">
+      <div class="hct-item"><span>🔒</span> Track record inmutable</div>
+      <div class="hct-div"></div>
+      <div class="hct-item"><span>📊</span> 109 pronósticos verificados</div>
+      <div class="hct-div"></div>
+      <div class="hct-item"><span>📱</span> Señales por WhatsApp</div>
+      <div class="hct-div"></div>
+      <div class="hct-item"><span>🌎</span> LATAM &amp; España</div>
+      <div class="hct-div"></div>
+      <div class="hct-item"><span>❌</span> Sin ediciones retroactivas</div>
+    </div>
+  </div>
+</section>
+
+<!-- NO TESTIMONIALS -->
+<section class="lp-section" id="lp-social">
+  <div class="lp-container">
+    <div class="lp-section-tag"><div class="ldot"></div>Comunidad APA</div>
+    <h2 class="lp-h2">Sin testimonios<br><span class="lp-h2-hl">que no puedas verificar.</span></h2>
+    <div class="lp-no-testi">
+      <div class="lp-nt-icon">🔍</div>
+      <div class="lp-nt-title">Transparencia radical</div>
+      <div class="lp-nt-text">La mayoría de plataformas muestran testimonios que no puedes verificar. Nosotros no. Cuando tengamos suscriptores con resultados documentados, los publicaremos con su permiso y con el historial auditado que lo respalde. Por ahora, lo único que mostramos es lo que puedes verificar.</div>
+      <div class="lp-nt-cta">
+        <span>Lo que sí puedes auditar ahora mismo:</span>
+        <button class="lp-sp-cta" onclick="go('sport')">109 pronósticos con resultado → Ver track record completo</button>
+      </div>
+    </div>
+    <div class="lp-trust-badges">
+      <div class="lp-badge"><span class="lp-badge-icon">🔒</span><span>Track record inmutable</span></div>
+      <div class="lp-badge"><span class="lp-badge-icon">📊</span><span>109 pronósticos verificados</span></div>
+      <div class="lp-badge"><span class="lp-badge-icon">📱</span><span>Señales por WhatsApp</span></div>
+      <div class="lp-badge"><span class="lp-badge-icon">🌎</span><span>LATAM &amp; España</span></div>
+      <div class="lp-badge"><span class="lp-badge-icon">⭐</span><span>Nivel 3 Consolidado</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- PLANS OVERVIEW — Home resumen, detalle en cada módulo -->
+<section class="lp-section lp-section-alt" id="lp-plans">
+  <div class="lp-container">
+    <div class="lp-section-tag"><div class="ldot"></div>Elige tu módulo</div>
+    <h2 class="lp-h2">Deportes o Mercados.<br><span class="lp-h2-hl">Un solo estándar.</span></h2>
+    <p class="lp-h2-sub">Cada módulo es autosuficiente: planes, track record auditado y registro directo. Selecciona el tuyo.</p>
+    <div class="home-price-grid">
+
+      <!-- APA SPORT -->
+      <div class="hpc-card sp" onclick="go('sport')" role="button" tabindex="0" onkeydown="if(event.key==='Enter')go('sport')">
+        <div class="hpc-badge sp"><div class="ldot"></div>APA Sport</div>
+        <div>
+          <div class="hpc-title">Football + NBA</div>
+          <div class="hpc-desc">Señal pre-partido · Señal en vivo al descanso · Player props · WhatsApp directo</div>
+        </div>
+        <div class="hpc-price-row">
+          <div>
+            <div class="hpc-from">Desde</div>
+            <div class="hpc-price sp">$19<span class="hpc-mo">/mes</span></div>
+          </div>
+          <div class="hpc-wr-badge sp">78.9% WR · 109 props</div>
+        </div>
+        <div class="hpc-bullets">
+          <span>⚽ Football · 🏀 NBA — suscripción única</span>
+          <span>Planes Básico $19 / Pro $49 / Élite $129</span>
+          <span>5 días gratis · Sin tarjeta · Sin app</span>
+        </div>
+        <div class="hpc-cta sp">Ver planes y registrarse <span>→</span></div>
+      </div>
+
+      <!-- APA MARKETS -->
+      <div class="hpc-card mk" onclick="go('markets')" role="button" tabindex="0" onkeydown="if(event.key==='Enter')go('markets')">
+        <div class="hpc-badge mk"><div class="ndot" style="width:5px;height:5px;animation:pulse 2s ease-in-out infinite;"></div>APA Markets</div>
+        <div>
+          <div class="hpc-title">Gold · Forex</div>
+          <div class="hpc-desc">XAU/USD + EUR/USD · Señales manuales o MAM automatizado con Guardian activo</div>
+        </div>
+        <div class="hpc-price-row">
+          <div>
+            <div class="hpc-from">Gold desde</div>
+            <div class="hpc-price mk">$29<span class="hpc-mo">/mes</span></div>
+          </div>
+          <div class="hpc-wr-badge mk">72% WR · en auditoría</div>
+        </div>
+        <div class="hpc-bullets">
+          <span>🪙 Gold XAU/USD · 💱 Forex EUR/USD</span>
+          <span>MAM: 25% fee solo sobre ganancias</span>
+          <span>Track record 25/100 señales · Demo activo</span>
+        </div>
+        <div class="hpc-cta mk">Ver planes y lista de espera <span>→</span></div>
+      </div>
+
+    </div>
+    <div class="plan-note">⚠️ Precios de lanzamiento bloqueados para primeros suscriptores. Subirán al completar los umbrales de track record por módulo. Los planes completos con todo el detalle están dentro de cada módulo.</div>
+  </div>
+</section>
+
+<!-- REGISTRATION -->
+<section class="lp-section" id="lp-reg">
+  <div class="lp-container">
+    <div id="reg-anchor"></div>
+    <div class="lp-cta-block">
+      <div class="lp-cta-block-left">
+        <div class="lp-cta-eyebrow"><div class="ldot"></div>APA Sport · 5 días gratis · Sin tarjeta · Sin app</div>
+        <h2 class="lp-cta-h2">La ventaja no espera.<br><span class="lp-h2-hl sp">Empieza hoy.</span></h2>
+        <p class="lp-cta-desc">Registra tu nombre, correo y WhatsApp. En menos de 24h recibes tu primera señal. Si en 5 días no ves el valor, no pagas nada.</p>
+        <div class="lp-cta-included">
+          <div class="lp-ci"><span class="pf-ok">✓</span>⚽🏀 Football + NBA — señales antes del partido</div>
+          <div class="lp-ci"><span class="pf-ok">✓</span>Edge + stake calculado en cada señal</div>
+          <div class="lp-ci"><span class="pf-ok">✓</span>Track record completo auditado públicamente</div>
+          <div class="lp-ci"><span class="pf-ok">✓</span>Sin app. Sin dashboard. Solo WhatsApp.</div>
+          <div class="lp-ci"><span class="pf-ok">✓</span>78.9% WR histórico — 109 props verificadas</div>
+        </div>
+      </div>
+      <div class="lp-cta-form">
+        <div class="lp-form-inner" id="lp-form-main">
+          <div class="lp-form-title">Activar prueba gratuita · 5 días</div>
+          <!-- honeypot -->
+          <div class="hp-field" aria-hidden="true"><input type="text" name="website" tabindex="-1" autocomplete="off"></div>
+          <div class="lp-form-fields">
+            <div class="ff">
+              <label for="lp-name">Nombre completo</label>
+              <input type="text" id="lp-name" name="name" placeholder="Tu nombre" autocomplete="name" maxlength="80" required>
+              <span class="form-error" id="err-lp-name">Por favor ingresa tu nombre</span>
+            </div>
+            <div class="ff">
+              <label for="lp-email">Correo electrónico</label>
+              <input type="email" id="lp-email" name="email" placeholder="correo@email.com" autocomplete="email" maxlength="120" required>
+              <span class="form-error" id="err-lp-email">Correo inválido</span>
+            </div>
+            <div class="ff">
+              <label for="lp-phone">WhatsApp (con código de país)</label>
+              <input type="tel" id="lp-phone" name="phone" placeholder="+593 99 000 0000" autocomplete="tel" maxlength="20" required>
+              <span class="form-error" id="err-lp-phone">Ingresa tu número con código de país</span>
+            </div>
+            <div class="ff">
+              <label for="lp-interest">¿Qué te interesa más?</label>
+              <select id="lp-interest" name="interest" required>
+                <option value="sport-pro">APA Sport — Pro $49/mes (recomendado)</option>
+                <option value="sport-basico">APA Sport — Básico $19/mes</option>
+                <option value="sport-elite">APA Sport — Élite $129/mes (grupos)</option>
+                <option value="markets">APA Markets — Gold (lista de espera)</option>
+              </select>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted)">
+              <input type="checkbox" id="lp-ref-check" onchange="document.getElementById('lp-ref-field').style.display=this.checked?'flex':'none'" style="accent-color:var(--sp);width:14px;height:14px;cursor:pointer">
+              <label for="lp-ref-check" style="cursor:pointer">¿Te refirió alguien? (ambos reciben días extra)</label>
+            </div>
+            <div class="ff" id="lp-ref-field" style="display:none">
+              <label for="lp-ref">WhatsApp de quien te refirió</label>
+              <input type="tel" id="lp-ref" name="ref" placeholder="+593 99 000 0000" maxlength="20">
+            </div>
+            <div style="font-size:10px;color:var(--muted2);line-height:1.65">Al registrarte aceptas recibir señales de APA Core. Datos seguros, no compartidos. Cancela respondiendo STOP.</div>
+            <button class="lp-cta-primary" style="width:100%;justify-content:center;font-size:14px;padding:14px" onclick="submitLPReg()" type="button">🎯 Activar 5 días gratis ahora →</button>
+          </div>
+        </div>
+        <div id="lp-form-success" style="display:none;text-align:center;padding:32px 20px;">
+          <div style="font-size:44px;margin-bottom:12px">🎯</div>
+          <div style="font-family:'Syne',sans-serif;font-size:20px;font-weight:800;margin-bottom:8px">¡Listo! Revisa tu WhatsApp</div>
+          <div style="font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.7">En menos de 24h recibirás tu primera señal APA. Si no la ves, escríbenos directamente.</div>
+          <a id="lp-wa-link" class="reg-wa-btn" href="#" target="_blank" rel="noopener noreferrer">💬 Escribir a APA ahora</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER HOME -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="f-brand"><div class="ndot"></div>APA Core</div>
+        <div class="f-tagline">Análisis probabilístico auditado. LATAM &amp; España.</div>
+      </div>
+      <div class="footer-links">
+        <div class="fl-col">
+          <h4>Módulos</h4>
+          <a onclick="go('sport')">APA Sport</a>
+          <a onclick="go('markets')">APA Markets</a>
+        </div>
+        <div class="fl-col">
+          <h4>Legal</h4>
+          <a href="mailto:apacorecompany@gmail.com">Contacto</a>
+        </div>
+      </div>
+    </div>
+    <div class="footer-disc">⚠️ Análisis estadístico informativo. No somos casa de apuestas ni asesor financiero registrado. No garantizamos resultados. Las apuestas y los mercados financieros conllevan riesgo de pérdida. Solo para mayores de 18 años. El contenido de este sitio es de carácter educativo e informativo únicamente. · apacore.io</div>
+  </div>
+</footer>
+</div>
+
+
+<!-- ════════════════════════════════════════════════
+     APA SPORT PAGE
+════════════════════════════════════════════════ -->
+<div class="page" id="page-sport">
+<div class="mod-page">
+  <div class="mp-hero">
+    <div class="mp-inner">
+      <button class="back-btn" onclick="go('home')">← Volver a APA Core</button>
+      <div class="mp-tag sp"><div class="ldot"></div>APA Sport</div>
+      <h1 class="mp-h1">Análisis deportivo<br><span class="hl-sp">con track record auditado.</span></h1>
+      <p class="mp-desc">La única plataforma LATAM con modelos probabilísticos auditados por categoría. Wins y losses publicados desde el primer análisis.</p>
+      <div class="mp-stats">
+        <div><div class="mp-stat-n sp">78.9%</div><div class="mp-stat-l">Win Rate Global</div></div>
+        <div><div class="mp-stat-n sp">109</div><div class="mp-stat-l">Props totales</div></div>
+        <div><div class="mp-stat-n sp">38+</div><div class="mp-stat-l">Partidos analizados</div></div>
+        <div><div class="mp-stat-n sp">0</div><div class="mp-stat-l">Ediciones retroactivas</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="mp-body">
+    <div class="markets-selector">
+      <div class="ms-lbl">Deportes disponibles</div>
+      <div class="markets-row">
+        <button class="st-btn active sp" id="spbtn-football" onclick="switchSport('football',this)">
+          <div class="st-btn-dot"></div>⚽ Football<span class="st-btn-wr">78.9%</span>
+        </button>
+        <button class="st-btn sp" id="spbtn-nba" onclick="switchSport('nba',this)">
+          <div class="st-btn-dot"></div>🏀 NBA<span class="st-btn-wr">88%</span>
+        </button>
+        <button class="st-btn soon sp"><div class="st-btn-dot"></div>🎾 Tenis<span class="st-btn-wr" style="color:var(--muted2);font-size:9px">próx.</span></button>
+      </div>
+    </div>
+
+    <!-- FOOTBALL PANEL -->
+    <div class="panel active" id="panel-football">
+      <div class="exec-card sp">
+        <div class="ec-hdr">
+          <div class="ec-meta">Amistoso FIFA · 27 Mar 2026 · S3</div>
+          <div class="live-pill"><div class="ldot"></div>Última sesión</div>
+        </div>
+        <div class="ec-teams">
+          <div class="ec-team">Marruecos</div>
+          <div style="text-align:center"><div class="ec-score sp">1 — 1</div><div class="ec-time">FT · Amistoso</div></div>
+          <div class="ec-team">Ecuador</div>
+        </div>
+        <div class="sig-head"><span>Señal APA</span><span>Prob.</span><span>HT</span><span>Estado</span></div>
+        <div class="sig-row"><div>Corners Under 6.5</div><div class="sig-d">92%</div><div class="sig-d">0-0</div><div class="chip win">✓ WIN</div></div>
+        <div class="sig-row"><div>Tarjetas Over 2.5</div><div class="sig-d">72%</div><div class="sig-d">0-0</div><div class="chip win">✓ WIN</div></div>
+        <div class="sig-row"><div>BTTS No</div><div class="sig-d">88%</div><div class="sig-d">0-0</div><div class="chip loss">✗ LOSS</div></div>
+      </div>
+
+      <div class="sec-title">Modelos Football — clic para auditar historial completo</div>
+      <div class="models-grid">
+        <div class="mc sp click" onclick="openModal('tarjetas')">
+          <div class="mc-top"><div class="mc-name">Tarjetas</div><div class="mc-badge">Football ⭐</div></div>
+          <div class="mc-wr">93%</div>
+          <div class="mc-bar-bg"><div class="mc-bar-fill" style="width:93%"></div></div>
+          <div class="mc-meta"><span>S1·S3·S4·S5</span><span>Activo</span></div>
+          <div class="mc-link"><span>Ver historial completo</span><span>›</span></div>
+        </div>
+        <div class="mc sp click" onclick="openModal('shots')">
+          <div class="mc-top"><div class="mc-name">Shots Totales</div><div class="mc-badge">Football</div></div>
+          <div class="mc-wr">86%</div>
+          <div class="mc-bar-bg"><div class="mc-bar-fill" style="width:86%"></div></div>
+          <div class="mc-meta"><span>S1·S3+</span><span>Activo</span></div>
+          <div class="mc-link"><span>Ver historial completo</span><span>›</span></div>
+        </div>
+        <div class="mc sp click" onclick="openModal('shots_arco')">
+          <div class="mc-top"><div class="mc-name">Shots Arco</div><div class="mc-badge">Football</div></div>
+          <div class="mc-wr">73%</div>
+          <div class="mc-bar-bg"><div class="mc-bar-fill" style="width:73%"></div></div>
+          <div class="mc-meta"><span>S4·S5</span><span>Activo</span></div>
+          <div class="mc-link"><span>Ver historial completo</span><span>›</span></div>
+        </div>
+        <div class="mc sp click" onclick="openModal('corners')">
+          <div class="mc-top"><div class="mc-name">Córners</div><div class="mc-badge">Football</div></div>
+          <div class="mc-wr">75%</div>
+          <div class="mc-bar-bg"><div class="mc-bar-fill" style="width:75%"></div></div>
+          <div class="mc-meta"><span>S1·S3+</span><span>Activo</span></div>
+          <div class="mc-link"><span>Ver historial completo</span><span>›</span></div>
+        </div>
+        <div class="mc sp click" /* BTTS en calibración — onclick deshabilitado hasta WR >= 75% */>
+          <div class="mc-top"><div class="mc-name">BTTS</div><div class="mc-badge">Football</div></div>
+          <div class="mc-wr" style="color:var(--warn)">57%</div>
+          <div class="mc-bar-bg"><div class="mc-bar-fill" style="width:57%;background:var(--warn)"></div></div>
+          <div class="mc-meta"><span>S1·S3</span><span><span class="mc-badge-status depuracion">⚠ Depuración</span></span></div>
+          <div class="mc-link"><span>Ver historial completo</span><span>›</span></div>
+        </div>
+        <div class="mc sp dim">
+          <div class="mc-top"><div class="mc-name">Team Total</div><div class="mc-badge">Football</div></div>
+          <div class="mc-wr na">40%</div>
+          <div class="mc-bar-bg"><div class="mc-bar-fill" style="width:40%;background:var(--loss)"></div></div>
+          <div class="mc-meta"><span>S1</span><span><span class="mc-badge-status suspendido">✗ Suspendido</span></span></div>
+          <div class="mc-link"><span>Sin operación activa</span><span>›</span></div>
+        </div>
+      </div>
+      <div class="cta-band sp">
+        <div><div class="cb-title">Señales Football en tu WhatsApp</div><div class="cb-sub">Antes del partido. Sin apps. Sin dashboards.</div></div>
+        <button class="cb-btn sp" onclick="document.getElementById('sp-reg-anchor').scrollIntoView({behavior:'smooth'})">Ver planes →</button>
+      </div>
+
+      <!-- FOOTBALL PLANS -->
+      <div class="panel-plans">
+        <div class="panel-plans-title">Planes APA Sport — Football + NBA · precios de lanzamiento</div>
+        <div class="plans-grid" style="grid-template-columns:repeat(3,1fr);">
+          <div class="plan">
+            <div class="plan-name">Básico</div>
+            <div><div class="plan-price"><span class="plan-num sp">$19</span><span class="plan-per">/mes</span></div>
+            <div class="plan-post">→ <s>$29</s>/mes post-validación</div></div>
+            <div class="plan-for">Apostador casual</div>
+            <div class="plan-feats">
+              <div class="pf"><span class="pf-ok">✓</span><span>Señal pre-partido · Football (1 partido/día)</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Hasta 4 señales por partido</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Edge + stake incluidos</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Señal directa por WhatsApp</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>3 ligas disponibles</span></div>
+              <div class="pf"><span class="pf-no">✗</span><span class="pf-muted">Sin señal en vivo al descanso</span></div>
+              <div class="pf"><span class="pf-no">✗</span><span class="pf-muted">Sin player props NBA</span></div>
+            </div>
+            <button class="plan-btn ghost" onclick="document.getElementById('sp-reg-anchor').scrollIntoView({behavior:'smooth'})">Elegir Básico</button>
+          </div>
+          <div class="plan featured">
+            <div class="plan-name">Pro</div>
+            <div><div class="plan-price"><span class="plan-num sp">$49</span><span class="plan-per">/mes</span></div>
+            <div class="plan-post">→ <s>$79</s>/mes post-validación</div></div>
+            <div class="plan-for">Apostador serio</div>
+            <div class="plan-feats">
+              <div class="pf"><span class="pf-ok">✓</span><span>Señal pre-partido · Football — todas las ligas</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Señal en vivo · Football al descanso</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Señal pre-partido + en vivo · NBA</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Player props NBA incluidos</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Edge + stake + probabilidad APA</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>5 días de prueba gratis</span></div>
+            </div>
+            <button class="plan-btn primary" onclick="document.getElementById('sp-reg-anchor').scrollIntoView({behavior:'smooth'})">Activar 5 días gratis →</button>
+          </div>
+          <div class="plan">
+            <div class="plan-name">Élite</div>
+            <div><div class="plan-price"><span class="plan-num sp">$129</span><span class="plan-per">/mes</span></div>
+            <div class="plan-post">→ <s>$199</s>/mes post-validación</div></div>
+            <div class="plan-for">Grupos y sindicatos</div>
+            <div class="plan-feats">
+              <div class="pf"><span class="pf-ok">✓</span><span>Todo lo del plan Pro</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Hasta 5 números WhatsApp</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Soporte prioritario directo</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Acceso anticipado APA Markets Gold</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Onboarding personalizado</span></div>
+            </div>
+            <button class="plan-btn ghost" onclick="document.getElementById('sp-reg-anchor').scrollIntoView({behavior:'smooth'})">Elegir Élite</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- NBA PANEL -->
+    <div class="panel" id="panel-nba">
+      <div class="exec-card sp">
+        <div class="ec-hdr">
+          <div class="ec-meta">NBA · Conferencia Oeste · Mar 2026</div>
+          <div class="live-pill"><div class="ldot"></div>Última sesión</div>
+        </div>
+        <div class="ec-teams">
+          <div class="ec-team">Lakers</div>
+          <div style="text-align:center"><div class="ec-score sp">112 — 108</div><div class="ec-time">FT · NBA</div></div>
+          <div class="ec-team">Warriors</div>
+        </div>
+        <div class="sig-head"><span>Señal APA</span><span>Prob.</span><span>Q2</span><span>Estado</span></div>
+        <div class="sig-row"><div>LeBron Over 26.5 pts</div><div class="sig-d">71%</div><div class="sig-d">58-62</div><div class="chip win">✓ WIN</div></div>
+        <div class="sig-row"><div>Curry Over 6.5 ast</div><div class="sig-d">68%</div><div class="sig-d">58-62</div><div class="chip loss">✗ LOSS</div></div>
+        <div class="sig-row"><div>Davis Over 11.5 reb</div><div class="sig-d">65%</div><div class="sig-d">58-62</div><div class="chip win">✓ WIN</div></div>
+      </div>
+
+      <div class="sec-title">Modelos NBA — clic para auditar</div>
+      <div class="models-grid">
+        <div class="mc sp click" onclick="openModal('nba_pts')">
+          <div class="mc-top"><div class="mc-name">Props Puntos</div><div class="mc-badge">NBA ⭐</div></div>
+          <div class="mc-wr">90%</div>
+          <div class="mc-bar-bg"><div class="mc-bar-fill" style="width:90%"></div></div>
+          <div class="mc-meta"><span>21 props · 19W·2L</span><span>Activo</span></div>
+          <div class="mc-link"><span>Ver historial completo</span><span>›</span></div>
+        </div>
+        <div class="mc sp click" onclick="openModal('nba_ast')">
+          <div class="mc-top"><div class="mc-name">Props Asistencias</div><div class="mc-badge">NBA</div></div>
+          <div class="mc-wr">86%</div>
+          <div class="mc-bar-bg"><div class="mc-bar-fill" style="width:86%"></div></div>
+          <div class="mc-meta"><span>Sesiones activas</span><span>Activo</span></div>
+          <div class="mc-link"><span>Ver historial completo</span><span>›</span></div>
+        </div>
+        <div class="mc sp click" onclick="openModal('nba_total')">
+          <div class="mc-top"><div class="mc-name">Total O/U</div><div class="mc-badge">NBA</div></div>
+          <div class="mc-wr">81%</div>
+          <div class="mc-bar-bg"><div class="mc-bar-fill" style="width:81%"></div></div>
+          <div class="mc-meta"><span>Sesiones activas</span><span>Activo</span></div>
+          <div class="mc-link"><span>Ver historial completo</span><span>›</span></div>
+        </div>
+        <div class="mc sp click" onclick="openModal('nba_reb')">
+          <div class="mc-top"><div class="mc-name">Props Rebotes</div><div class="mc-badge">NBA</div></div>
+          <div class="mc-wr" style="color:var(--warn)">67%</div>
+          <div class="mc-bar-bg"><div class="mc-bar-fill" style="width:67%;background:var(--warn)"></div></div>
+          <div class="mc-meta"><span>Sesiones activas</span><span><span class="mc-badge-status depuracion">⚠ Depuración</span></span></div>
+          <div class="mc-link"><span>Ver historial completo</span><span>›</span></div>
+        </div>
+      </div>
+      <div class="cta-band sp">
+        <div><div class="cb-title">Player props NBA en tu WhatsApp</div><div class="cb-sub">90% WR en puntos. Señales en vivo al descanso.</div></div>
+        <button class="cb-btn sp" onclick="document.getElementById('sp-reg-anchor').scrollIntoView({behavior:'smooth'})">Ver planes →</button>
+      </div>
+
+      <!-- NBA PLANS — misma suscripción que Football -->
+      <div class="panel-plans">
+        <div class="panel-plans-title">Planes APA Sport — Football + NBA · misma suscripción</div>
+        <div class="panel-plans-note nba">🏀 Football y NBA comparten suscripción. El plan Pro incluye ambos módulos completos con Pre-Match™ + HT Report™ para cada deporte.</div>
+        <div class="plans-grid" style="grid-template-columns:repeat(3,1fr);">
+          <div class="plan">
+            <div class="plan-name">Básico</div>
+            <div><div class="plan-price"><span class="plan-num sp">$19</span><span class="plan-per">/mes</span></div>
+            <div class="plan-post">→ <s>$29</s>/mes post-validación</div></div>
+            <div class="plan-for">Apostador casual</div>
+            <div class="plan-feats">
+              <div class="pf"><span class="pf-ok">✓</span><span>Señal pre-partido · Football (1 partido/día)</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Hasta 4 señales por partido</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Edge + stake incluidos</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Señal directa por WhatsApp</span></div>
+              <div class="pf"><span class="pf-no">✗</span><span class="pf-muted">Sin señal en vivo al descanso</span></div>
+              <div class="pf"><span class="pf-no">✗</span><span class="pf-muted">Sin player props NBA</span></div>
+            </div>
+            <button class="plan-btn ghost" onclick="document.getElementById('sp-reg-anchor').scrollIntoView({behavior:'smooth'})">Elegir Básico</button>
+          </div>
+          <div class="plan featured">
+            <div class="plan-name">Pro</div>
+            <div><div class="plan-price"><span class="plan-num sp">$49</span><span class="plan-per">/mes</span></div>
+            <div class="plan-post">→ <s>$79</s>/mes post-validación</div></div>
+            <div class="plan-for">Apostador serio</div>
+            <div class="plan-feats">
+              <div class="pf"><span class="pf-ok">✓</span><span>Pre-Match™ Football — todas las ligas</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Señal en vivo · Football</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Señal pre-partido · NBA</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Señal en vivo · NBA</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Player props · Puntos · Asistencias · Rebotes</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>5 días de prueba gratis</span></div>
+            </div>
+            <button class="plan-btn primary" onclick="document.getElementById('sp-reg-anchor').scrollIntoView({behavior:'smooth'})">Activar 5 días gratis →</button>
+          </div>
+          <div class="plan">
+            <div class="plan-name">Élite</div>
+            <div><div class="plan-price"><span class="plan-num sp">$129</span><span class="plan-per">/mes</span></div>
+            <div class="plan-post">→ <s>$199</s>/mes post-validación</div></div>
+            <div class="plan-for">Grupos y sindicatos</div>
+            <div class="plan-feats">
+              <div class="pf"><span class="pf-ok">✓</span><span>Todo lo del plan Pro</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Hasta 5 números WhatsApp</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Soporte prioritario directo</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Acceso anticipado APA Markets Gold</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Onboarding personalizado</span></div>
+            </div>
+            <button class="plan-btn ghost" onclick="document.getElementById('sp-reg-anchor').scrollIntoView({behavior:'smooth'})">Elegir Élite</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REGISTER BLOCK SPORT PAGE -->
+    <div class="reg-block" id="sp-reg-anchor">
+      <div class="reg-block-title">Activar señales APA Sport</div>
+      <div class="reg-block-sub">5 días gratis · Sin tarjeta · Señal directa a tu WhatsApp</div>
+      <div id="reg-form-sp" class="reg-form">
+        <div class="hp-field" aria-hidden="true"><input type="text" name="website2" tabindex="-1" autocomplete="off"></div>
+        <div class="reg-form-2col">
+          <div class="ff"><label for="sp-name">Nombre</label><input type="text" id="sp-name" placeholder="Tu nombre" autocomplete="name" maxlength="80" required></div>
+          <div class="ff"><label for="sp-email">Correo</label><input type="email" id="sp-email" placeholder="correo@email.com" maxlength="120" required></div>
+        </div>
+        <div class="ff"><label for="sp-phone">WhatsApp (con código de país)</label><input type="tel" id="sp-phone" placeholder="+593 99 000 0000" maxlength="20" required></div>
+        <div class="ff">
+          <label for="sp-plan">Plan de interés</label>
+          <select id="sp-plan">
+            <option value="Pro $49/mes">Pro $49/mes — Football + NBA (recomendado)</option>
+            <option value="Básico $19/mes">Básico $19/mes — 1 partido/día</option>
+            <option value="Élite $129/mes">Élite $129/mes — Grupos 5 números</option>
+          </select>
+        </div>
+        <div style="font-size:10px;color:var(--muted2)">Datos seguros. Cancela respondiendo STOP. Sin tarjeta requerida.</div>
+        <button class="plan-btn primary" onclick="submitReg('sp')" type="button">🎯 Activar 5 días gratis →</button>
+      </div>
+      <div class="reg-success" id="reg-success-sp">
+        <div class="reg-success-icon">🎯</div>
+        <div class="reg-success-title">¡Registro recibido!</div>
+        <div class="reg-success-sub">Abre WhatsApp para confirmar y activar tu acceso.</div>
+        <a id="reg-wa-link" class="reg-wa-btn" href="#" target="_blank" rel="noopener noreferrer">💬 Confirmar en WhatsApp →</a>
+      </div>
+    </div>
+  </div>
+</div>
+<footer>
+  <div class="footer-inner">
+    <div class="footer-disc">⚠️ Análisis estadístico informativo. No somos casa de apuestas. No garantizamos resultados. Solo mayores de 18 años. · apacore.io</div>
+  </div>
+</footer>
+</div>
+
+<!-- ════════════════════════════════════════════════
+     APA MARKETS PAGE
+════════════════════════════════════════════════ -->
+<div class="page" id="page-markets">
+<div class="mod-page">
+  <div class="mp-hero">
+    <div class="mp-inner">
+      <button class="back-btn" onclick="go('home')">← Volver a APA Core</button>
+      <div class="mp-tag mk"><div class="ndot" style="width:5px;height:5px;animation:pulse 2s ease-in-out infinite;"></div>APA Markets</div>
+      <h1 class="mp-h1">Mercados financieros<br><span class="hl-mk">con track record auditado.</span></h1>
+      <p class="mp-desc">Análisis probabilístico aplicado a Gold XAU/USD. Construcción pública del track record antes de abrir capital real.</p>
+      <div class="mp-stats">
+        <div><div class="mp-stat-n mk">72%</div><div class="mp-stat-l">WR Gold · en auditoría</div></div>
+        <div><div class="mp-stat-n mk">25</div><div class="mp-stat-l">Señales Gold</div></div>
+        <div><div class="mp-stat-n mk">25/100</div><div class="mp-stat-l">Track record</div></div>
+        <div><div class="mp-stat-n mk">0</div><div class="mp-stat-l">Ediciones retroactivas</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="mp-body">
+    <div class="markets-selector">
+      <div class="ms-lbl">Mercados disponibles</div>
+      <div class="markets-row">
+        <button class="st-btn active mk" id="mkbtn-gold" onclick="switchMkt('gold',this)">
+          <div class="st-btn-dot"></div>🪙 Gold XAU/USD<span class="st-btn-wr">72%</span>
+        </button>
+        <button class="st-btn mk" id="st-btn-forex" onclick="switchMkt('forex',this)">
+          <div class="st-btn-dot"></div>💱 Forex EUR/USD<span class="st-btn-wr">—</span>
+        </button>
+        <button class="st-btn soon mk"><div class="st-btn-dot"></div>₿ BTC/USD<span class="st-btn-wr" style="color:var(--muted2);font-size:9px">próx.</span></button>
+      </div>
+    </div>
+
+    <div class="panel active" id="panel-gold">
+      <div class="exec-card mk">
+        <div class="ec-hdr">
+          <div class="ec-meta">XAU/USD · Spot · Sesión New York · 28 Mar 2026</div>
+          <div class="live-pill"><div class="ldot"></div>Último trade</div>
+        </div>
+        <div class="ec-prices">
+          <div><div class="ec-plbl">Precio entrada</div><div class="ec-pval">3,036.40</div></div>
+          <div class="ec-arr">→</div>
+          <div style="text-align:right"><div class="ec-plbl">Precio cierre</div><div class="ec-pval">3,048.20</div></div>
+        </div>
+        <div class="sig-head"><span>Señal APA</span><span>Prob.</span><span>Entrada</span><span>Estado</span></div>
+        <div class="sig-row"><div>Buy · Over 3,040</div><div class="sig-d">78%</div><div class="sig-d">3,036.40</div><div class="chip win">✓ WIN</div></div>
+        <div class="sig-row"><div>Buy · Resistencia 3,050</div><div class="sig-d">65%</div><div class="sig-d">3,044.00</div><div class="chip win">✓ WIN</div></div>
+        <div class="sig-row"><div>Sell · Under 3,028</div><div class="sig-d">61%</div><div class="sig-d">3,031.20</div><div class="chip loss">✗ LOSS</div></div>
+      </div>
+
+      <div class="prog-card">
+        <div class="pc-row"><span class="pc-lbl">Track record Gold en construcción</span><span class="pc-val">25 / 100 señales</span></div>
+        <div class="pc-bar"><div class="pc-fill" style="width:25%"></div></div>
+        <div class="pc-perks">
+          <div class="pc-perk">Precio de lanzamiento bloqueado para lista de espera</div>
+          <div class="pc-perk">Acceso al track record antes del lanzamiento público</div>
+          <div class="pc-perk">Señales de prueba durante período de auditoría</div>
+        </div>
+      </div>
+
+      <div class="sec-title">Modelos Gold — clic para auditar</div>
+      <div class="models-grid">
+        <div class="mc mk click" onclick="openModal('buy_gold')">
+          <div class="mc-top"><div class="mc-name">Buy Signal</div><div class="mc-badge">Gold · XAU/USD</div></div>
+          <div class="mc-wr">78%</div>
+          <div class="mc-bar-bg"><div class="mc-bar-fill" style="width:78%"></div></div>
+          <div class="mc-meta"><span>14 señales · 11W·3L</span><span>Activo</span></div>
+          <div class="mc-link"><span>Ver historial completo</span><span>›</span></div>
+        </div>
+        <div class="mc mk click" onclick="openModal('sell_gold')">
+          <div class="mc-top"><div class="mc-name">Sell Signal</div><div class="mc-badge">Gold · XAU/USD</div></div>
+          <div class="mc-wr">63%</div>
+          <div class="mc-bar-bg"><div class="mc-bar-fill" style="width:63%"></div></div>
+          <div class="mc-meta"><span>11 señales · 7W·4L</span><span>Activo</span></div>
+          <div class="mc-link"><span>Ver historial completo</span><span>›</span></div>
+        </div>
+        <div class="mc mk click" onclick="switchMkt('forex',document.getElementById('st-btn-forex'))">
+          <div class="mc-top"><div class="mc-name">Forex EUR/USD</div><div class="mc-badge">APA Markets</div></div>
+          <div class="mc-wr na" style="font-size:14px;color:var(--gold)">Demo activo</div>
+          <div class="mc-bar-bg"><div class="mc-bar-fill" style="width:0%"></div></div>
+          <div class="mc-meta"><span>Track record iniciando</span><span>WR objetivo: 65%</span></div>
+          <div class="mc-link"><span>Ver módulo Forex</span><span>›</span></div>
+        </div>
+      </div>
+
+      <!-- Markets register block -->
+      <div class="panel-plans">
+        <div class="panel-plans-title">Planes APA Gold — precios de lanzamiento</div>
+        <div class="plans-grid" style="grid-template-columns:repeat(3,1fr);">
+          <div class="plan">
+            <div class="plan-name">Early Access</div>
+            <div><div class="plan-price"><span class="plan-num" style="color:var(--gold2)">$29</span><span class="plan-per">/mes</span></div>
+            <div class="plan-post">→ <s>$49</s>/mes post-validación</div></div>
+            <div class="plan-for">Trader manual XAU/USD</div>
+            <div class="plan-feats">
+              <div class="pf"><span class="pf-ok">✓</span><span>Señales Buy/Sell Gold por WhatsApp</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Entrada · Stop · TP1 · TP2 calculados</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Probabilidad APA + edge por señal</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Acceso al track record completo</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Precio bloqueado durante auditoría</span></div>
+              <div class="pf"><span class="pf-no">✗</span><span class="pf-muted">Sin ejecución automática MT5</span></div>
+            </div>
+            <button class="plan-btn ghost" style="border-color:var(--goldborder);color:var(--gold2);" onclick="document.getElementById('mk-reg-anchor').scrollIntoView({behavior:'smooth'})">Elegir Early Access</button>
+          </div>
+          <div class="plan featured" style="border-color:rgba(200,164,74,.4);background:rgba(200,164,74,.03);">
+            <div class="plan-name" style="color:var(--gold2)">MAM — Auto</div>
+            <div><div class="plan-price"><span class="plan-num" style="color:var(--gold2)">25%</span><span class="plan-per"> performance fee</span></div>
+            <div class="plan-post">Solo sobre ganancias — sin fee en pérdida</div></div>
+            <div class="plan-for">Capital mínimo: $500</div>
+            <div class="plan-feats">
+              <div class="pf"><span class="pf-ok">✓</span><span>Ejecución automática en MT5</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Guardian activo — protección 3%/día</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Profit Protection 6% activado</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Reporte semanal de cuenta</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Capital segregado — solo tus fondos</span></div>
+            </div>
+            <button class="plan-btn" style="background:var(--gold);color:#000;" onclick="document.getElementById('mk-reg-anchor').scrollIntoView({behavior:'smooth'})">Solicitar MAM →</button>
+          </div>
+          <div class="plan">
+            <div class="plan-name">Bundle Markets</div>
+            <div><div class="plan-price"><span class="plan-num" style="color:var(--gold2)">$60</span><span class="plan-per">/mes</span></div>
+            <div class="plan-post">Gold + Forex · ahorro vs planes individuales</div></div>
+            <div class="plan-for">Trader multi-mercado</div>
+            <div class="plan-feats">
+              <div class="pf"><span class="pf-ok">✓</span><span>Señales Gold XAU/USD</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Señales Forex EUR/USD</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Correlación DXY gestionada</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>1 WhatsApp — 2 mercados</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Track record auditado de ambos</span></div>
+            </div>
+            <button class="plan-btn ghost" style="border-color:var(--goldborder);color:var(--gold2);" onclick="document.getElementById('mk-reg-anchor').scrollIntoView({behavior:'smooth'})">Bundle Markets →</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="reg-block" id="mk-reg-anchor">
+        <div class="reg-block-title">Únete a la lista de espera — APA Markets</div>
+        <div class="reg-block-sub">Precio bloqueado · Acceso anticipado al track record · Sin compromiso</div>
+        <div id="reg-form-mk" class="reg-form">
+          <div class="hp-field" aria-hidden="true"><input type="text" name="website3" tabindex="-1" autocomplete="off"></div>
+          <div class="reg-form-2col">
+            <div class="ff"><label for="mk-name">Nombre</label><input type="text" id="mk-name" placeholder="Tu nombre" autocomplete="name" maxlength="80" required></div>
+            <div class="ff"><label for="mk-email">Correo</label><input type="email" id="mk-email" placeholder="correo@email.com" maxlength="120" required></div>
+          </div>
+          <div class="ff"><label for="mk-phone">WhatsApp (con código de país)</label><input type="tel" id="mk-phone" placeholder="+593 99 000 0000" maxlength="20" required></div>
+          <div class="ff">
+            <label for="mk-capital">Capital disponible para operar</label>
+            <select id="mk-capital">
+              <option value="$500–$1000">$500–$1,000</option>
+              <option value="$1000–$5000">$1,000–$5,000</option>
+              <option value="$5000+">$5,000+</option>
+            </select>
+          </div>
+          <div style="font-size:10px;color:var(--muted2)">Lista de espera. Sin compromiso. Te avisamos cuando el track record esté listo.</div>
+          <button class="plan-btn primary" style="background:var(--gold);color:#000;" onclick="submitReg('mk')" type="button">🪙 Unirme a la lista de espera →</button>
+        </div>
+        <div class="reg-success" id="reg-success-mk">
+          <div class="reg-success-icon">🪙</div>
+          <div class="reg-success-title">¡En la lista!</div>
+          <div class="reg-success-sub">Te contactamos cuando APA Markets esté listo para capital real.</div>
+          <a id="mk-wa-link" class="reg-wa-btn" href="#" target="_blank" rel="noopener noreferrer">💬 Confirmar en WhatsApp →</a>
+        </div>
+      </div>
+
+      <div class="cta-band mk" style="margin-top:20px">
+        <div><div class="cb-title">Modelo MAM — gestión de capital</div><div class="cb-sub">Capital mínimo: $500 · Comisión: 75% para ti / 25% APA solo en ganancias</div></div>
+        <button class="cb-btn mk" onclick="document.getElementById('mk-reg-anchor').scrollIntoView({behavior:'smooth'})">Ver condiciones →</button>
+      </div>
+    </div>
+
+    <!-- ══ FOREX PANEL ══ -->
+    <div class="panel" id="panel-forex">
+      <div class="exec-card mk">
+        <div class="ec-hdr">
+          <div class="ec-meta">EUR/USD · Spot · London + NY Session</div>
+          <div class="live-pill" style="background:var(--golddim);border-color:rgba(200,164,74,.3)">
+            <div class="ldot"></div>Track Record en construcción
+          </div>
+        </div>
+        <div class="ec-prices">
+          <div><div class="ec-plbl">Par</div><div class="ec-pval" style="font-size:16px">EUR/USD</div></div>
+          <div class="ec-arr">·</div>
+          <div style="text-align:right"><div class="ec-plbl">Estado</div><div class="ec-pval" style="font-size:14px;color:var(--gold)">Demo activo</div></div>
+        </div>
+        <div style="margin:12px 0;padding:12px;background:rgba(200,164,74,.06);border-radius:8px;border:1px solid rgba(200,164,74,.15)">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px">
+            Arquitectura del módulo
+          </div>
+          <div style="font-size:11px;color:var(--text);line-height:1.8">
+            🕒 Ventanas activas: London Open (03-08h) · Golden Window (08-12h) · NY (13-17h) Quito<br>
+            🔁 Ciclo adaptativo: cada 5 min en London Open · cada 10 min en resto de sesión<br>
+            🧠 Motor: Manual Forex v1.0 · Árbol de 9 pasos · Monte Carlo M1/M2/M3<br>
+            📐 Correlación DXY: Gold y Forex no operan en la misma dirección simultáneamente<br>
+            🛡️ Guardian activo: 2% máx/trade · 3% stop sesión · Profit Protection 6%
+          </div>
+        </div>
+      </div>
+
+      <div class="prog-card">
+        <div class="pc-row"><span class="pc-lbl">Track record Forex en construcción</span><span class="pc-val">0 / 30 señales mínimas</span></div>
+        <div class="pc-bar"><div class="pc-fill" style="width:0%"></div></div>
+        <div class="pc-perks">
+          <div class="pc-perk">Señales activas en demo — track record iniciando</div>
+          <div class="pc-perk">Plan membresía disponible cuando WR ≥ 65% en 30+ trades</div>
+          <div class="pc-perk">Lista de espera: precio bloqueado para early adopters</div>
+        </div>
+      </div>
+
+      <div class="sec-title">Modelos Forex — track record en construcción</div>
+      <div class="models-grid">
+        <div class="mc mk" style="opacity:.5">
+          <div class="mc-top"><div class="mc-name">London Breakout</div><div class="mc-badge">EUR/USD</div></div>
+          <div class="mc-wr na">—</div>
+          <div class="mc-bar-bg"><div class="mc-bar-fill" style="width:0%"></div></div>
+          <div class="mc-meta"><span>En construcción</span><span>WR objetivo: 65%</span></div>
+          <div class="mc-link" style="color:var(--muted)"><span>Track record iniciando</span><span>›</span></div>
+        </div>
+        <div class="mc mk" style="opacity:.5">
+          <div class="mc-top"><div class="mc-name">Continuación Tendencia</div><div class="mc-badge">EUR/USD</div></div>
+          <div class="mc-wr na">—</div>
+          <div class="mc-bar-bg"><div class="mc-bar-fill" style="width:0%"></div></div>
+          <div class="mc-meta"><span>En construcción</span><span>WR objetivo: 62%</span></div>
+          <div class="mc-link" style="color:var(--muted)"><span>Track record iniciando</span><span>›</span></div>
+        </div>
+        <div class="mc mk" style="opacity:.5">
+          <div class="mc-top"><div class="mc-name">S/R Bounce</div><div class="mc-badge">EUR/USD</div></div>
+          <div class="mc-wr na">—</div>
+          <div class="mc-bar-bg"><div class="mc-bar-fill" style="width:0%"></div></div>
+          <div class="mc-meta"><span>En construcción</span><span>WR objetivo: 62%</span></div>
+          <div class="mc-link" style="color:var(--muted)"><span>Track record iniciando</span><span>›</span></div>
+        </div>
+      </div>
+
+      <div class="cta-band mk">
+        <div>
+          <div class="cb-title">Lista de espera activa — APA Forex</div>
+          <div class="cb-sub">Demo en curso. Precio bloqueado para early adopters. Track record iniciando.</div>
+        </div>
+        <button class="cb-btn mk" onclick="document.getElementById('fx-reg-anchor').scrollIntoView({behavior:'smooth'})">Unirme a la lista →</button>
+      </div>
+
+      <!-- Forex Plans -->
+      <div style="margin-top:28px">
+        <div class="sec-title">Planes APA Forex — precios de lanzamiento</div>
+        <div class="plans-grid" style="grid-template-columns:repeat(3,1fr);margin-top:16px">
+          <div class="plan">
+            <div class="plan-name">Señales</div>
+            <div><div class="plan-price"><span class="plan-num" style="color:var(--gold2)">$35</span><span class="plan-per">/mes</span></div>
+            <div class="plan-post">→ <s>$55</s>/mes post-validación</div></div>
+            <div class="plan-for">Trader manual EUR/USD</div>
+            <div class="plan-feats">
+              <div class="pf"><span class="pf-ok">✓</span><span>Señales Pre-Session + intraday</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Entrada · Stop · TP1 · TP2</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Probabilidad APA + edge calculado</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>WhatsApp directo</span></div>
+              <div class="pf"><span class="pf-no">✗</span><span class="pf-muted">Sin ejecución automática</span></div>
+            </div>
+            <button class="plan-btn ghost" onclick="document.getElementById('fx-reg-anchor').scrollIntoView({behavior:'smooth'})">Elegir Señales →</button>
+          </div>
+          <div class="plan featured" style="border-color:rgba(200,164,74,.4);background:rgba(200,164,74,.03)">
+            <div class="plan-name" style="color:var(--gold2)">MAM — Auto</div>
+            <div><div class="plan-price"><span class="plan-num" style="color:var(--gold2)">25%</span><span class="plan-per"> performance fee</span></div>
+            <div class="plan-post">Solo sobre ganancias — sin fee en pérdida</div></div>
+            <div class="plan-for">Capital mínimo: $500</div>
+            <div class="plan-feats">
+              <div class="pf"><span class="pf-ok">✓</span><span>Ejecución automática en MT5</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Guardian activo — protección 3%/día</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Profit Protection 6% activado</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Reporte semanal de cuenta</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Capital segregado — solo tus fondos</span></div>
+            </div>
+            <button class="plan-btn" style="background:var(--gold);color:#000" onclick="document.getElementById('fx-reg-anchor').scrollIntoView({behavior:'smooth'})">Solicitar MAM →</button>
+          </div>
+          <div class="plan">
+            <div class="plan-name">Bundle Markets</div>
+            <div><div class="plan-price"><span class="plan-num" style="color:var(--gold2)">$60</span><span class="plan-per">/mes</span></div>
+            <div class="plan-post">Gold + Forex · ahorro vs planes individuales</div></div>
+            <div class="plan-for">Trader multi-mercado</div>
+            <div class="plan-feats">
+              <div class="pf"><span class="pf-ok">✓</span><span>Señales Gold XAU/USD</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Señales Forex EUR/USD</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Correlación DXY gestionada</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>1 WhatsApp — 2 mercados</span></div>
+              <div class="pf"><span class="pf-ok">✓</span><span>Track record auditado ambos</span></div>
+            </div>
+            <button class="plan-btn ghost" onclick="document.getElementById('fx-reg-anchor').scrollIntoView({behavior:'smooth'})">Bundle Markets →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Forex Registration Form -->
+      <div class="reg-block" id="fx-reg-anchor" style="margin-top:28px">
+        <div class="reg-block-title">Únete a la lista de espera — APA Forex</div>
+        <div class="reg-block-sub">Track record en construcción · Precio bloqueado · Sin compromiso</div>
+        <div id="reg-form-fx" class="reg-form">
+          <div class="hp-field" aria-hidden="true"><input type="text" name="website4" tabindex="-1" autocomplete="off"></div>
+          <div class="reg-form-2col">
+            <div class="ff"><label for="fx-name">Nombre</label><input type="text" id="fx-name" placeholder="Tu nombre" autocomplete="name" maxlength="80" required></div>
+            <div class="ff"><label for="fx-email">Correo</label><input type="email" id="fx-email" placeholder="correo@email.com" maxlength="120" required></div>
+          </div>
+          <div class="ff"><label for="fx-phone">WhatsApp (con código de país)</label><input type="tel" id="fx-phone" placeholder="+593 99 000 0000" maxlength="20" required></div>
+          <div class="ff">
+            <label for="fx-interes">Tipo de operación</label>
+            <select id="fx-interes">
+              <option value="señales">Señales manuales — yo ejecuto</option>
+              <option value="mam">MAM — ejecución automática</option>
+              <option value="bundle">Bundle Gold + Forex</option>
+            </select>
+          </div>
+          <div class="ff">
+            <label for="fx-capital">Capital disponible para operar</label>
+            <select id="fx-capital">
+              <option value="$500–$1000">$500–$1,000</option>
+              <option value="$1000–$5000">$1,000–$5,000</option>
+              <option value="$5000+">$5,000+</option>
+            </select>
+          </div>
+          <div style="font-size:10px;color:var(--muted2)">Lista de espera. Sin compromiso. Te avisamos cuando el track record Forex esté validado (30+ señales, WR ≥ 65%).</div>
+          <button class="plan-btn primary" style="background:var(--gold);color:#000;" onclick="submitReg('fx')" type="button">💱 Unirme a la lista Forex →</button>
+        </div>
+        <div class="reg-success" id="reg-success-fx">
+          <div class="reg-success-icon">💱</div>
+          <div class="reg-success-title">¡En la lista!</div>
+          <div class="reg-success-sub">Te contactamos cuando APA Forex alcance el track record mínimo de validación.</div>
+          <a id="fx-wa-link" class="reg-wa-btn" href="#" target="_blank" rel="noopener noreferrer">💬 Confirmar en WhatsApp →</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<footer>
+  <div class="footer-inner">
+    <div class="footer-disc">⚠️ Análisis estadístico informativo. No somos asesor financiero registrado. Los mercados financieros conllevan riesgo de pérdida. Solo mayores de 18 años. · apacore.io</div>
+  </div>
+</footer>
+</div>
+
+<!-- ════ MODAL ════ -->
+<div class="modal-ov" id="modalOv" onclick="closeOut(event)" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+  <div class="modal">
+    <div class="m-head">
+      <div><div class="m-title" id="mTitle">—</div><div class="m-sub" id="mSub">—</div></div>
+      <button class="m-close" onclick="closeModal()" aria-label="Cerrar">✕</button>
+    </div>
+    <div class="m-stats" id="mStats"></div>
+    <div class="m-chart">
+      <div class="m-chart-lbl">Evolución Win Rate acumulado — señal por señal</div>
+      <svg class="wr-svg" viewBox="0 0 560 68" id="wrSvg" aria-hidden="true">
+        <defs><linearGradient id="wg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3ec9c0" stop-opacity=".18"/><stop offset="100%" stop-color="#3ec9c0" stop-opacity="0"/></linearGradient></defs>
+        <line x1="0" y1="16" x2="560" y2="16" stroke="rgba(255,255,255,.04)" stroke-width="1"/>
+        <line x1="0" y1="34" x2="560" y2="34" stroke="rgba(255,255,255,.04)" stroke-width="1"/>
+        <line x1="0" y1="52" x2="560" y2="52" stroke="rgba(255,255,255,.04)" stroke-width="1"/>
+        <line x1="0" y1="42" x2="560" y2="42" stroke="rgba(150,150,150,.12)" stroke-width="1" stroke-dasharray="4,4"/>
+        <text x="563" y="45" fill="rgba(150,150,150,.3)" font-size="7" font-family="'IBM Plex Mono',monospace">50%</text>
+        <path id="wrArea" fill="url(#wg)"/>
+        <path id="wrLine" fill="none" stroke-width="1.7" stroke-linecap="round"/>
+        <circle id="wrDot" r="3" fill="none" stroke-width="1.5"/>
+      </svg>
+    </div>
+    <div class="m-hist">
+      <div class="m-hist-lbl">Historial de señales</div>
+      <div id="mHistory"></div>
+    </div>
+    <div class="m-foot">
+      <div class="m-disc">Track record desde el primer análisis · Sin ediciones retroactivas · Wins y losses con igual visibilidad · apacore.io<br>⚠️ Análisis informativo. No garantizamos resultados. Solo +18.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ STICKY MOBILE CTA ════ -->
+<div class="sticky-mob" id="stickyMob">
+  <div class="smc-text"><strong>78.9% WR · 109 props verificadas</strong>5 días gratis · Sin tarjeta</div>
+  <button class="smc-btn" onclick="document.getElementById('reg-anchor').scrollIntoView({behavior:'smooth'})">Probar gratis →</button>
+</div>
+
+<!-- ════ AI FLOAT ════ -->
+<div class="ai-float">
+  <div class="ai-popup" id="aiPopup">
+    <div class="ai-popup-title">¿Tienes preguntas?</div>
+    <div class="ai-popup-sub">Escríbenos por WhatsApp. Respondemos en menos de 2h.</div>
+    <a id="ai-wa-link" class="reg-wa-btn" href="#" target="_blank" rel="noopener noreferrer">💬 Hablar con APA ahora</a>
+    <div class="ai-popup-note">Lun–Vie · 8am–10pm · Hora Ecuador</div>
+  </div>
+  <div class="ai-float-row">
+    <div class="ai-pill" onclick="toggleAi()">💬 ¿Preguntas?</div>
+    <button class="ai-fab" id="aiFab" onclick="toggleAi()" aria-label="Abrir chat">💬</button>
+  </div>
+</div>
+
+<script>
+/* ════════════════════════════════════════════════
+   SECURITY — WA number stored in parts, assembled at runtime
+════════════════════════════════════════════════ */
+(function(){
+  var p=['593','987','379','719'];
+  window._WA='https://wa.me/'+p.join('');
+  // Set all WA links
+  function setWA(){
+    var ids=['ai-wa-link'];
+    ids.forEach(function(id){
+      var el=document.getElementById(id);
+      if(el) el.href=window._WA+'?text='+encodeURIComponent('Hola APA Core! Quiero saber más sobre las señales.');
+    });
+  }
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded',setWA);
+  } else { setWA(); }
+})();
+
+/* ════════════════════════════════════════════════
+   SECURITY — Input sanitizer (no innerHTML with user data)
+════════════════════════════════════════════════ */
+function esc(s){
+  if(typeof s!=='string') return '';
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+/* ════════════════════════════════════════════════
+   SECURITY — Rate limiter for form submissions
+════════════════════════════════════════════════ */
+var _submitLog={};
+function _canSubmit(key){
+  var now=Date.now();
+  if(!_submitLog[key]) _submitLog[key]=[];
+  _submitLog[key]=_submitLog[key].filter(function(t){return now-t<60000;});
+  if(_submitLog[key].length>=3){return false;}
+  _submitLog[key].push(now);
+  return true;
+}
+
+/* ════════════════════════════════════════════════
+   MODAL DATA — Real tracking data
+════════════════════════════════════════════════ */
+var DATA={
+  tarjetas:{title:'Modelo Tarjetas',sub:'APA Sport · Football · Tarjetas Over/Under · ⭐ Categoría ESTRELLA',color:'#12c987',signals:15,wins:14,losses:1,wr:93.3,
+    history:[
+      {date:'27-Mar-26',match:'Marruecos vs Ecuador · Tarjetas Over 2.5',prob:'72%',result:'win'},
+      {date:'27-Mar-26',match:'Suiza vs Alemania · Tarjetas Over 1.5',prob:'82%',result:'win'},
+      {date:'27-Mar-26',match:'España vs Serbia · Tarjetas Over 2.5',prob:'88%',result:'win'},
+      {date:'27-Mar-26',match:'Inglaterra vs Uruguay · Tarjetas Over 2.5',prob:'57%',result:'win'},
+      {date:'08-Mar-26',match:'S1 · Multiple partidos · Tarjetas', prob:'—',result:'win'},
+    ]},
+  shots:{title:'Modelo Shots Totales',sub:'APA Sport · Football · Shots Over/Under',color:'#12c987',signals:13,wins:11,losses:2,wr:84.6,
+    history:[
+      {date:'08-Mar-26',match:'Brest vs Le Havre · Shots Over 22.5',prob:'78%',result:'win'},
+      {date:'08-Mar-26',match:'Nice vs Stade Rennais · Shots Over 22.5',prob:'84%',result:'win'},
+      {date:'08-Mar-26',match:'Leeds vs Norwich · Shots Under 22.5',prob:'95%',result:'win'},
+      {date:'08-Mar-26',match:'Aucas vs Dep. Cuenca · Shots Over 22.5',prob:'94%',result:'win'},
+      {date:'08-Mar-26',match:'Luverdense vs Mixto MT · Shots Over 22.5',prob:'94%',result:'loss'},
+    ]},
+  shots_arco:{title:'Modelo Shots Arco',sub:'APA Sport · Football · Shots al Arco',color:'#12c987',signals:8,wins:6,losses:2,wr:73,
+    history:[
+      {date:'31-Mar-26',match:'S4 Eliminatorias UEFA · Shots arco',prob:'—',result:'win'},
+      {date:'31-Mar-26',match:'S4 Eliminatorias UEFA · Shots arco',prob:'—',result:'win'},
+      {date:'31-Mar-26',match:'S4 Eliminatorias UEFA · Shots arco',prob:'—',result:'loss'},
+    ]},
+  corners:{title:'Modelo Córners',sub:'APA Sport · Football · Corners Over/Under',color:'#12c987',signals:12,wins:9,losses:3,wr:75,
+    history:[
+      {date:'27-Mar-26',match:'Marruecos vs Ecuador · Corners Under 6.5',prob:'92%',result:'win'},
+      {date:'27-Mar-26',match:'España vs Serbia · Corners Under 8.5',prob:'65%',result:'win'},
+      {date:'27-Mar-26',match:'Suiza vs Alemania · Corners Under 8.5',prob:'63%',result:'loss'},
+      {date:'08-Mar-26',match:'Fluminense vs Flamengo · Corners Under 9.5',prob:'95%',result:'win'},
+      {date:'08-Mar-26',match:'Brest vs Le Havre · Corners Under 9.5',prob:'88%',result:'win'},
+      {date:'08-Mar-26',match:'USM Alger vs Constantine · Corners Over 9.5',prob:'94%',result:'loss'},
+      {date:'08-Mar-26',match:'Leeds vs Norwich · Corners Under 9.5',prob:'63%',result:'win'},
+    ]},
+  btts:{title:'Modelo BTTS',sub:'APA Sport · Football · Both Teams To Score · ⚠ En depuración',color:'#f59e0b',signals:10,wins:6,losses:4,wr:57.1,
+    history:[
+      {date:'27-Mar-26',match:'Marruecos vs Ecuador · BTTS No',prob:'88%',result:'loss'},
+      {date:'08-Mar-26',match:'Fluminense vs Flamengo · BTTS No',prob:'80%',result:'win'},
+      {date:'08-Mar-26',match:'Nice vs Stade Rennais · BTTS No',prob:'69%',result:'win'},
+      {date:'08-Mar-26',match:'Leeds vs Norwich · BTTS No',prob:'79%',result:'win'},
+      {date:'08-Mar-26',match:'Union Berlin vs Bremen · BTTS No',prob:'61%',result:'loss'},
+      {date:'08-Mar-26',match:'Ceará vs Fortaleza · BTTS No',prob:'89%',result:'loss'},
+    ]},
+  nba_pts:{title:'Player Props · Puntos',sub:'APA Sport · NBA · Puntos Over/Under · ⭐ Categoría ESTRELLA',color:'#fb923c',signals:21,wins:19,losses:2,wr:90.5,
+    history:[
+      {date:'Mar-26',match:'Lakers vs Warriors · LeBron Over 26.5 pts',prob:'71%',result:'win'},
+      {date:'Mar-26',match:'Celtics vs Nets · Tatum Over 28.5 pts',prob:'70%',result:'win'},
+      {date:'Mar-26',match:'Nuggets vs Suns · Jokic Over 24.5 pts',prob:'73%',result:'win'},
+      {date:'Mar-26',match:'Bucks vs Heat · Giannis Over 30.5 pts',prob:'66%',result:'loss'},
+      {date:'Mar-26',match:'Lakers vs Clippers · LeBron Over 24.5 pts',prob:'69%',result:'win'},
+    ]},
+  nba_ast:{title:'Player Props · Asistencias',sub:'APA Sport · NBA · Asistencias Over/Under',color:'#fb923c',signals:7,wins:6,losses:1,wr:85.7,
+    history:[
+      {date:'Mar-26',match:'Lakers vs Warriors · Curry Over 6.5 ast',prob:'68%',result:'loss'},
+      {date:'Mar-26',match:'Celtics vs Nets · Brown Over 4.5 ast',prob:'62%',result:'win'},
+      {date:'Mar-26',match:'Bucks vs Heat · Giannis Over 5.5 ast',prob:'65%',result:'win'},
+    ]},
+  nba_total:{title:'Total O/U · Partido',sub:'APA Sport · NBA · Total puntos Over/Under',color:'#fb923c',signals:5,wins:4,losses:1,wr:81,
+    history:[
+      {date:'Mar-26',match:'NBA · Total Over/Under partido',prob:'—',result:'win'},
+      {date:'Mar-26',match:'NBA · Total Over/Under partido',prob:'—',result:'win'},
+    ]},
+  nba_reb:{title:'Player Props · Rebotes',sub:'APA Sport · NBA · Rebotes Over/Under · ⚠ En depuración',color:'#f59e0b',signals:5,wins:3,losses:2,wr:67,
+    history:[
+      {date:'Mar-26',match:'Lakers vs Warriors · Davis Over 11.5 reb',prob:'65%',result:'win'},
+    ]},
+  buy_gold:{title:'Buy Signal · Gold',sub:'APA Markets · XAU/USD · Señales de compra',color:'#c8a44a',signals:14,wins:11,losses:3,wr:78,
+    history:[
+      {date:'28-Mar-26',match:'XAU/USD NY · Buy Over 3,040',prob:'78%',result:'win'},
+      {date:'28-Mar-26',match:'XAU/USD NY · Buy Resistencia 3,050',prob:'65%',result:'win'},
+      {date:'27-Mar-26',match:'XAU/USD London · Buy Over 3,020',prob:'71%',result:'win'},
+      {date:'25-Mar-26',match:'XAU/USD NY · Buy Over 3,010',prob:'73%',result:'win'},
+      {date:'20-Mar-26',match:'XAU/USD London · Buy Over 2,960',prob:'68%',result:'loss'},
+    ]},
+  sell_gold:{title:'Sell Signal · Gold',sub:'APA Markets · XAU/USD · Señales de venta',color:'#c8a44a',signals:11,wins:7,losses:4,wr:63.6,
+    history:[
+      {date:'28-Mar-26',match:'XAU/USD NY · Sell Under 3,028',prob:'61%',result:'loss'},
+      {date:'26-Mar-26',match:'XAU/USD NY · Sell Under 3,025',prob:'65%',result:'loss'},
+      {date:'21-Mar-26',match:'XAU/USD NY · Sell Under 2,970',prob:'67%',result:'win'},
+      {date:'19-Mar-26',match:'XAU/USD London · Sell Under 2,950',prob:'63%',result:'win'},
+      {date:'17-Mar-26',match:'XAU/USD NY · Sell Under 2,930',prob:'70%',result:'win'},
+    ]},
+};
+
+/* ════════════════════════════════════════════════
+   NAVIGATION
+════════════════════════════════════════════════ */
+function go(page,sub){
+  document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active');});
+  var pg=document.getElementById('page-'+page);
+  if(pg) pg.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(sub){
+    setTimeout(function(){
+      if(page==='sport') switchSport(sub,document.getElementById('spbtn-'+sub));
+      if(page==='markets') switchMkt(sub,document.getElementById('mkbtn-'+sub));
+    },50);
+  }
+}
+function switchSport(sport,btn){
+  document.querySelectorAll('#page-sport .panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('#page-sport .st-btn:not(.soon)').forEach(function(b){b.classList.remove('active');});
+  var p=document.getElementById('panel-'+sport);
+  if(p) p.classList.add('active');
+  if(btn) btn.classList.add('active');
+}
+function switchMkt(mkt,btn){
+  document.querySelectorAll('#page-markets .panel').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('#page-markets .st-btn:not(.soon)').forEach(function(b){b.classList.remove('active');});
+  var p=document.getElementById('panel-'+mkt);
+  if(p) p.classList.add('active');
+  if(btn) btn.classList.add('active');
+}
+
+/* ════════════════════════════════════════════════
+   WR CURVE (modal chart)
+════════════════════════════════════════════════ */
+function buildCurve(hist,color){
+  if(!hist||!hist.length) return;
+  var res=[].concat(hist).reverse().map(function(h){return h.result==='win';});
+  var W=560,H=60,pt=6,pb=8;
+  var wr=[],w=0;
+  res.forEach(function(v,i){if(v)w++;wr.push(w/(i+1));});
+  var xs=W/(wr.length-1||1);
+  var ty=function(v){return pt+(1-v)*(H-pt-pb);};
+  var c=wr.map(function(v,i){return[i*xs,ty(v)];});
+  var d='M'+c[0][0]+','+c[0][1];
+  for(var i=1;i<c.length;i++){var p2=c[i-1],q=c[i],mx=(p2[0]+q[0])/2;d+=' C'+mx+','+p2[1]+' '+mx+','+q[1]+' '+q[0]+','+q[1];}
+  var last=c[c.length-1];
+  document.getElementById('wrArea').setAttribute('d',d+' L'+last[0]+','+H+' L0,'+H+' Z');
+  document.getElementById('wrLine').setAttribute('d',d);
+  document.getElementById('wrLine').setAttribute('stroke',color);
+  var dot=document.getElementById('wrDot');
+  dot.setAttribute('cx',last[0]);dot.setAttribute('cy',last[1]);
+  dot.setAttribute('stroke',color);dot.setAttribute('fill',color);
+  var stops=document.querySelectorAll('#wg stop');
+  if(stops[0]) stops[0].setAttribute('stop-color',color);
+  if(stops[1]) stops[1].setAttribute('stop-color',color);
+}
+
+/* ════════════════════════════════════════════════
+   MODAL — using esc() for all user-facing content from DATA
+════════════════════════════════════════════════ */
+function openModal(key){
+  var m=DATA[key];if(!m) return;
+  document.getElementById('mTitle').textContent=m.title;
+  document.getElementById('mSub').textContent=m.sub;
+  var c=m.color;
+  // Build stats safely using textContent
+  var stats=document.getElementById('mStats');
+  stats.innerHTML='';
+  var items=[
+    {n:m.signals,l:'Señales',col:c},
+    {n:m.wins,l:'Wins',col:'var(--win)'},
+    {n:m.losses,l:'Losses',col:'var(--loss)'},
+    {n:m.wr?(+m.wr).toFixed(1)+'%':'—',l:'Win Rate',col:c}
+  ];
+  items.forEach(function(it){
+    var d=document.createElement('div');d.className='m-stat';
+    var n=document.createElement('div');n.className='m-stat-n';n.style.color=it.col;n.textContent=it.n;
+    var l=document.createElement('div');l.className='m-stat-l';l.textContent=it.l;
+    d.appendChild(n);d.appendChild(l);stats.appendChild(d);
+  });
+  buildCurve(m.history,c);
+  var hist=document.getElementById('mHistory');
+  hist.innerHTML='';
+  if(!m.history.length){
+    var empty=document.createElement('div');
+    empty.style.cssText='text-align:center;padding:20px;color:var(--muted);font-size:12px';
+    empty.textContent='Sin señales aún · Track record iniciando';
+    hist.appendChild(empty);
+  } else {
+    m.history.forEach(function(h){
+      var row=document.createElement('div');row.className='hist-row';
+      var date=document.createElement('span');date.className='h-date';date.textContent=h.date;
+      var match=document.createElement('span');match.textContent=h.match;
+      var prob=document.createElement('span');prob.className='h-prob';prob.textContent=h.prob;
+      var chip=document.createElement('span');
+      var c2=document.createElement('span');
+      c2.className='chip '+(h.result==='win'?'win':'loss');
+      c2.textContent=h.result==='win'?'✓ WIN':'✗ LOSS';
+      chip.appendChild(c2);
+      row.appendChild(date);row.appendChild(match);row.appendChild(prob);row.appendChild(chip);
+      hist.appendChild(row);
+    });
+  }
+  document.getElementById('modalOv').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeModal(){document.getElementById('modalOv').classList.remove('open');document.body.style.overflow='';}
+function closeOut(e){if(e.target===document.getElementById('modalOv'))closeModal();}
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
+
+/* ════════════════════════════════════════════════
+   FORM VALIDATION + SUBMISSION
+════════════════════════════════════════════════ */
+function validateEmail(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);}
+function validatePhone(p){return /^\+?[\d\s\-()]{7,20}$/.test(p);}
+
+function submitLPReg(){
+  if(!_canSubmit('lp')){alert('Demasiados intentos. Espera un momento.');return;}
+  // Check honeypot
+  var hp=document.querySelector('input[name="website"]');
+  if(hp&&hp.value){return;}
+  var name=document.getElementById('lp-name').value.trim();
+  var email=document.getElementById('lp-email').value.trim();
+  var phone=document.getElementById('lp-phone').value.trim();
+  var ok=true;
+  if(!name){document.getElementById('err-lp-name').style.display='block';document.getElementById('lp-name').setAttribute('aria-invalid','true');ok=false;}
+  else{document.getElementById('err-lp-name').style.display='none';document.getElementById('lp-name').removeAttribute('aria-invalid');}
+  if(!validateEmail(email)){document.getElementById('err-lp-email').style.display='block';document.getElementById('lp-email').setAttribute('aria-invalid','true');ok=false;}
+  else{document.getElementById('err-lp-email').style.display='none';document.getElementById('lp-email').removeAttribute('aria-invalid');}
+  if(!validatePhone(phone)){document.getElementById('err-lp-phone').style.display='block';document.getElementById('lp-phone').setAttribute('aria-invalid','true');ok=false;}
+  else{document.getElementById('err-lp-phone').style.display='none';document.getElementById('lp-phone').removeAttribute('aria-invalid');}
+  if(!ok) return;
+  var interest=document.getElementById('lp-interest').value;
+  var ref=document.getElementById('lp-ref').value.trim();
+  var refText=ref?'\nReferido por: '+ref:'';
+  var msg='Hola APA Core!\n\nNombre: '+name+'\nCorreo: '+email+'\nWhatsApp: '+phone+'\nInterés: '+interest+refText+'\n\n¡Quiero activar mi prueba de 5 días gratuita!';
+  var waUrl=window._WA+'?text='+encodeURIComponent(msg);
+  document.getElementById('lp-wa-link').href=waUrl;
+  var form=document.getElementById('lp-form-main');
+  form.style.opacity='0';
+  form.style.transition='opacity .3s';
+  setTimeout(function(){
+    form.style.display='none';
+    document.getElementById('lp-form-success').style.display='block';
+  },300);
+  setTimeout(function(){window.open(waUrl,'_blank','noopener,noreferrer');},400);
+}
+
+function submitReg(type){
+  if(!_canSubmit(type)){alert('Demasiados intentos. Espera un momento.');return;}
+  // Honeypot: sp→website2, mk→website3, fx→website4
+  var hpName = type==='sp'?'website2':type==='mk'?'website3':'website4';
+  var hp=document.querySelector('input[name="'+hpName+'"]');
+  if(hp&&hp.value){return;}
+  var name=document.getElementById(type+'-name').value.trim();
+  var email=document.getElementById(type+'-email').value.trim();
+  var phone=document.getElementById(type+'-phone').value.trim();
+  if(!name||!validateEmail(email)||!validatePhone(phone)){
+    alert('Por favor completa todos los campos correctamente.');return;
+  }
+  var plan;
+  if(type==='sp')      plan='Plan: '+document.getElementById('sp-plan').value;
+  else if(type==='mk') plan='Capital: '+document.getElementById('mk-capital').value;
+  else if(type==='fx') plan='Tipo: '+document.getElementById('fx-interes').value+' | Capital: '+document.getElementById('fx-capital').value;
+  var modulo = type==='sp'?'APA Sport':type==='mk'?'APA Gold':'APA Forex';
+  var msg='Hola APA Core!\n\nMódulo: '+modulo+'\nNombre: '+name+'\nCorreo: '+email+'\nWhatsApp: '+phone+'\n'+plan+'\n\n'+(type==='sp'?'Quiero activar mi prueba de 5 días gratuita.':type==='mk'?'Me interesa APA Markets Gold.':'Me interesa APA Forex — lista de espera.');
+  var waUrl=window._WA+'?text='+encodeURIComponent(msg);
+  if(type==='sp') document.getElementById('reg-wa-link').href=waUrl;
+  else if(type==='mk') document.getElementById('mk-wa-link').href=waUrl;
+  else document.getElementById('fx-wa-link').href=waUrl;
+  var form=document.getElementById('reg-form-'+type);
+  form.style.opacity='0';form.style.transition='opacity .3s';
+  setTimeout(function(){
+    form.style.display='none';
+    document.getElementById('reg-success-'+type).classList.add('on');
+  },300);
+  setTimeout(function(){window.open(waUrl,'_blank','noopener,noreferrer');},400);
+}
+
+/* ════════════════════════════════════════════════
+   WR COUNTER ANIMATION
+════════════════════════════════════════════════ */
+function animateCounter(el,target,dur){
+  dur=dur||1800;var start=0;
+  var step=function(ts){
+    if(!start)start=ts;
+    var prog=Math.min((ts-start)/dur,1);
+    var eased=1-Math.pow(1-prog,3);
+    var val=Math.round(eased*target*10)/10;
+    el.textContent=val;
+    if(prog<1)requestAnimationFrame(step);else el.textContent=target;
+  };
+  requestAnimationFrame(step);
+}
+document.addEventListener('DOMContentLoaded',function(){
+  var el=document.getElementById('wrCounter');
+  if(el&&'IntersectionObserver' in window){
+    var obs=new IntersectionObserver(function(entries){
+      if(entries[0].isIntersecting){animateCounter(el,78.9);obs.disconnect();}
+    },{threshold:.5});
+    obs.observe(el);
+  } else if(el){ el.textContent='78.9'; }
+});
+
+/* ════════════════════════════════════════════════
+   STICKY MOBILE CTA — hide on scroll up, show on scroll down
+════════════════════════════════════════════════ */
+(function(){
+  var lastY=0,mob=document.getElementById('stickyMob');
+  if(!mob) return;
+  window.addEventListener('scroll',function(){
+    var y=window.scrollY;
+    if(y<200){mob.style.display='none';return;}
+    mob.style.display='flex';
+    // Hide when near registration section
+    var reg=document.getElementById('reg-anchor');
+    if(reg){var rect=reg.getBoundingClientRect();if(rect.top<200)mob.classList.add('hidden');else mob.classList.remove('hidden');}
+    lastY=y;
+  },{passive:true});
+})();
+
+/* ════════════════════════════════════════════════
+   AI FAB
+════════════════════════════════════════════════ */
+var _aiOpen=false;
+function toggleAi(){
+  _aiOpen=!_aiOpen;
+  document.getElementById('aiPopup').classList.toggle('open',_aiOpen);
+  document.getElementById('aiFab').textContent=_aiOpen?'✕':'💬';
+}
+</script>
+</body>
+</html>
